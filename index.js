@@ -27,7 +27,7 @@ const MAX_LENGTH_OF_BLUESKY = 300;
 // const MAX_LENGTH_OF_TWITTER = 280;
 
 const SCHEDULE_FILE = JSON.parse(fs.readFileSync("schedule.json").toString());
-const SCHEDULE = SCHEDULE_FILE[TODAY];
+const SCHEDULE = SCHEDULE_FILE["schedule"][TODAY];
 // const SCHEDULE_LAST_MODIFIED = Date(SCHEDULE_FILE.lastModified);
 
 const TEXT_FIRST_LINE = format(NOW, "yyyy年M月d日") + DAY_OF_WEEK[NOW.getDay()] +  "の音周辺配信スケジュール";
@@ -117,7 +117,7 @@ async function postToMisskey(text, replyId) {
 	let parameters = {
 		i: MISSKEY_ACCESS_TOKEN,
 		text: text,
-		visibility: "followers"
+		// visibility: "followers"
 	};
 
 	if (replyId !== undefined) {
