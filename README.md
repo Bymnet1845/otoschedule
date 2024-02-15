@@ -29,4 +29,4 @@ Blueskyでは、拙作のカスタムフィード「音MAD」が動作してお�
 
 ## ライセンス
 
-MITライセンス（[LICENSE.md](LICENSE.md)を参照）。
+[LICENSE](LICENSE)を参照（MITライセンス）。
