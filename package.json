@@ -1,8 +1,7 @@
 {
-  "name": "ototimetable",
-  "version": "0.1.1",
+  "name": "otoschedule",
+  "version": "0.1.2",
   "description": "This is notification bot of live broadcast in OTOMAD community.",
-  "codename": "otocalendar",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
