@@ -30,7 +30,7 @@ const SCHEDULE_FILE = JSON.parse(fs.readFileSync("schedule.json").toString());
 const SCHEDULE = SCHEDULE_FILE[TODAY];
 // const SCHEDULE_LAST_MODIFIED = Date(SCHEDULE_FILE.lastModified);
 
-const TEXT_FIRST_LINE = format(NOW, "yyyy年M月d日") + DAY_OF_WEEK[NOW.getDay()] +  "の音MAD周辺配信スケジュール）";
+const TEXT_FIRST_LINE = format(NOW, "yyyy年M月d日") + DAY_OF_WEEK[NOW.getDay()] +  "の音周辺配信スケジュール";
 const TEXT_SCHELUDES_NOT_FOUND = "\n\n今日予定されている配信の情報はありません。";
 
 let textForMisskey = [TEXT_FIRST_LINE];
@@ -117,7 +117,7 @@ async function postToMisskey(text, replyId) {
 	let parameters = {
 		i: MISSKEY_ACCESS_TOKEN,
 		text: text,
-		// visibility: "followers"
+		visibility: "followers"
 	};
 
 	if (replyId !== undefined) {
