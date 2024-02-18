@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { format } from "date-fns";
+import { format, add } from "date-fns";
 import atprotoApi from "@atproto/api";
 import fs from "fs";
 import twitterText from "twitter-text";
@@ -9,7 +9,7 @@ dotenv.config();
 const { BskyAgent, RichText } = atprotoApi;
 
 const NOW = new Date();
-const TODAY = format(NOW, "yyyy-MM-dd");
+const TODAY = format(NOW, "yyyy-MM-18");
 const DAY_OF_WEEK = ["㈰", "㈪", "㈫", "㈬", "㈭", "㈮", "㈯"]
 
 const SEGMENTER = new Intl.Segmenter("ja", {granularity: "grapheme"});
@@ -31,28 +31,39 @@ const SCHEDULE = SCHEDULE_FILE["schedule"][TODAY];
 // const SCHEDULE_LAST_MODIFIED = Date(SCHEDULE_FILE.lastModified);
 
 const TEXT_FIRST_LINE = format(NOW, "yyyy年M月d日") + DAY_OF_WEEK[NOW.getDay()] +  "の音MAD周辺配信スケジュール";
-const TEXT_SCHELUDES_NOT_FOUND = "\n\n今日予定されている配信の情報はありません。";
 
 let textForMisskey = [TEXT_FIRST_LINE];
 let textForBluesky = [TEXT_FIRST_LINE];
 // let textForTwitter = [TEXT_FIRST_LINE];
 
-if (SCHEDULE === undefined) {
-	textForMisskey[0] += TEXT_SCHELUDES_NOT_FOUND;
-	textForBluesky[0] += TEXT_SCHELUDES_NOT_FOUND;
-	// textForTwitter[0] += TEXT_SCHELUDES_NOT_FOUND;
-} else {
-	for (let plan of SCHEDULE.broadcast) {
-		generateTextForMisskey(plan);
-		generateTextForBluesky(plan);
+if (SCHEDULE !== undefined) {
+	for (let plan of SCHEDULE) {
+		let planTime;
+		
+		if (plan.time === null) {
+			planTime = "時刻不明";
+		} else {
+			planTime = plan.time + "～"
+		}
+
+		generateTextForMisskey(plan, planTime);
+		generateTextForBluesky(plan, planTime);
 		// generateTextForTwitter(plan);
 	}
+
+	post();
 }
 
-post();
+function generateTextForMisskey(plan, planTime) {
+	let planLink;
 
-function generateTextForMisskey(plan) {
-	const PLAN_TEXT = plan.name + "\n" + plan.time + "～ ?[" + plan.link.title + "](" + plan.link.url + ")";
+	if (plan.link.url === null) {
+		planLink = "";
+	} else {
+		planLink = " ?[" + plan.link.title + "](" + plan.link.url + ")";
+	}
+
+	const PLAN_TEXT = plan.name + "\n" + planTime + planLink;
 
 	// 既存の文字数＋追加するテキストの文字数＋改行と（続く）分の8文字
 	if ([...textForMisskey[textForMisskey.length - 1]].length + [...PLAN_TEXT].length + 8 > MAX_LENGTH_OF_MISSKEY) {
@@ -63,8 +74,16 @@ function generateTextForMisskey(plan) {
 	}
 }
 
-function generateTextForBluesky(plan) {
-	const PLAN_TEXT = plan.name + "\n" + plan.time + "～ " + plan.link.url;
+function generateTextForBluesky(plan, planTime) {
+	let planLink;
+
+	if (plan.link.url === null) {
+		planLink = "";
+	} else {
+		planLink = " " + plan.link.url;
+	}
+
+	const PLAN_TEXT = plan.name + "\n" + planTime + planLink;
 	const SEGMENTED_TEXT_FOR_BLUESKY = SEGMENTER.segment(textForBluesky[textForBluesky.length - 1]);
 	const SEGMENTED_PLAN_TEXT = SEGMENTER.segment(PLAN_TEXT);
 
@@ -116,8 +135,7 @@ async function post() {
 async function postToMisskey(text, replyId) {
 	let parameters = {
 		i: MISSKEY_ACCESS_TOKEN,
-		text: text,
-		// visibility: "followers"
+		text: text
 	};
 
 	if (replyId !== undefined) {
