@@ -9,7 +9,7 @@ dotenv.config();
 const { BskyAgent, RichText } = atprotoApi;
 
 const NOW = new Date();
-const TODAY = format(NOW, "yyyy-MM-18");
+const TODAY = format(NOW, "yyyy-MM-dd");
 const DAY_OF_WEEK = ["㈰", "㈪", "㈫", "㈬", "㈭", "㈮", "㈯"]
 
 const SEGMENTER = new Intl.Segmenter("ja", {granularity: "grapheme"});
