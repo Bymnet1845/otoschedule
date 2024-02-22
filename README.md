@@ -30,3 +30,8 @@ Blueskyでは、拙作のカスタムフィード「音MAD」が動作してお�
 ## ライセンス
 
 [LICENSE](LICENSE)を参照（MITライセンス）。
+
+## リンク
+
+- [Blueskyアカウント（@otoschedule.bsky.social）](https://bsky.app/profile/otoschedule.bsky.social)
+- [Misskeyアカウント（@otoschedule@zadankai.club）](https://zadankai.club/@otoschedule)
