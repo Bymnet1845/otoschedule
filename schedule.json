@@ -1,0 +1,95 @@
+{
+	"schedule": {
+		"2024-02-11": [
+			{
+				"name": "3人が見る音MAD #35",
+				"time": "19:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv344247642",
+					"url": "https://live.nicovideo.jp/watch/lv344247642"
+				}
+			}, {
+				"name": "【otogroove】合作概要＆リファレンス紹介配信 #OTGR",
+				"time": "21:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv344228434",
+					"url": "https://live.nicovideo.jp/watch/lv344228434"
+				}
+			}
+		], 
+		"2024-02-16": [
+			{
+				"name": "麻雀スタダ公開講義第３回「押し引きとオリ方」【音麻雀スタートダッシュ】",
+				"time": "20:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv344247642",
+					"url": "https://live.nicovideo.jp/watch/lv344304530"
+				}
+			}, {
+				"name": "抜いた素材しか使えない合作",
+				"time": "24:00",
+				"site": "youtube",
+				"link": {
+					"title": "Gz1JOokfkJw",
+					"url": "https://www.youtube.com/watch?v=Gz1JOokfkJw"
+				}
+			}
+		], 
+		"2024-02-17": [
+			{
+				"name": "抜いた素材しか使えない合作",
+				"time": "0:00",
+				"site": "youtube",
+				"link": {
+					"title": "Gz1JOokfkJw",
+					"url": "https://www.youtube.com/watch?v=Gz1JOokfkJw"
+				}
+			}, {
+				"name": "音MAD作者N人の壁(クイズ企画生) 1日目",
+				"time": "19:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv344247642",
+					"url": "https://live.nicovideo.jp/watch/lv344247642"
+				}
+			}
+		], 
+		"2024-02-18": [
+			{
+				"name": "視聴者参加型音MAD特集",
+				"time": null,
+				"site": "nicolive",
+				"link": {
+					"title": null,
+					"url": null
+				}
+			}
+		], 
+		"2024-02-23": [
+			{
+				"name": "音MAD作者N人の壁(クイズ企画生) 2日目",
+				"time": "20:00",
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://x.com/kyabetsu23/status/1753735176390361235"
+				}
+			}
+		], 
+		"2024-02-24": [
+			{
+				"name": "【#23】音MADラジオ　ゲスト：26K",
+				"time": null,
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://x.com/otoMAD_radio/status/1751234893110231383?s=20"
+				}
+			}
+		]
+	},
+	"lastModified": "2024-02-15T22:19+09:00"
+}
