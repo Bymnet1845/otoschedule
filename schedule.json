@@ -89,7 +89,59 @@
 					"url": "https://live.nicovideo.jp/watch/lv344410828"
 				}
 			}
+		], 
+		"2024-02-28": [
+			{
+				"name": "【合作】Super ひだまつり【ひだまりスケッチ20周年記念】",
+				"time": "0:15",
+				"site": "youtube",
+				"link": {
+					"title": "o-UmcuWpD2w（YouTube）",
+					"url": "https://www.youtube.com/watch?v=o-UmcuWpD2w"
+				}
+			}
+		], 
+		"2024-03-02": [
+			{
+				"name": "マダミス狂気山脈2.5『頂上戦争』",
+				"time": "21:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv344416211",
+					"url": "https://live.nicovideo.jp/watch/lv344416211"
+				}
+			}
+		], 
+		"2024-03-16": [
+			{
+				"name": "音MAD麻雀大会",
+				"time": "21:00",
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/adachitaiko/status/1761395730567360538"
+				}
+			}
+		], 
+		"2024-03-23": [
+			{
+				"name": "音スプラ",
+				"time": "18:00",
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/toutoumikan/status/1750071823377833990"
+				}
+			}, {
+				"name": "【#24】音MADラジオ　ゲスト：なぽり　#音RADIO",
+				"time": "20:00",
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/otoMAD_radio/status/1761395212558147684"
+				}
+			}
 		]
 	},
-	"lastModified": "2024-02-15T22:19+09:00"
+	"lastModified": "2024-02-27T23:35+09:00"
 }
