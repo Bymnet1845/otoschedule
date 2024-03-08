@@ -123,6 +123,39 @@
 				}
 			}
 		], 
+		"2024-03-09": [
+			{
+				"name": "ザ・ラジオ番長 -音MAD大分解-",
+				"time": "24:00",
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/banfuture/status/1759148248176919038"
+				}
+			}
+		], 
+		"2024-03-10": [
+			{
+				"name": "ザ・ラジオ番長 -音MAD大分解-",
+				"time": "0:00",
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/banfuture/status/1759148248176919038"
+				}
+			}
+		], 
+		"2024-03-15": [
+			{
+				"name": "マーダーミステリー『この慟哭は届かない』 #音MAD作者の慟哭",
+				"time": "22:30",
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/_PPLN/status/1763534652302622959"
+				}
+			}
+		], 
 		"2024-03-16": [
 			{
 				"name": "音MAD麻雀大会",
@@ -154,5 +187,5 @@
 			}
 		]
 	},
-	"lastModified": "2024-02-27T23:35+09:00"
+	"lastModified": "2024-03-08T23:55+09:00"
 }
