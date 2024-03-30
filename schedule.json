@@ -194,6 +194,26 @@
 					"url": "https://twitter.com/otoMAD_radio/status/1761395212558147684"
 				}
 			}
+		], 
+		"2024-03-31": [
+			{
+				"name": "床の間合作",
+				"time": "0:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv344768593",
+					"url": "https://live.nicovideo.jp/watch/lv344768593"
+				}
+			}, 
+			{
+				"name": "床の間合作",
+				"time": "0:30",
+				"site": "youtube",
+				"link": {
+					"title": "1C3fnzz9MI4（YouTube）",
+					"url": "https://www.youtube.com/watch?v=1C3fnzz9MI4"
+				}
+			}
 		]
 	},
 	"lastModified": "2024-03-08T23:55+09:00"
