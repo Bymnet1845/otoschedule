@@ -225,6 +225,63 @@
 					"url": "https://live.nicovideo.jp/watch/lv344937579"
 				}
 			}
+		], 
+		"2024-04-27": [
+			{
+				"name": "帰ってきた！柴又MADコンテスト in ニコニコ超会議2024【1日目】",
+				"time": "14:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv345012585",
+					"url": "https://live.nicovideo.jp/watch/lv345012585"
+				}
+			}, {
+				"name": "音MADスタートダッシュ　まだまだ終わらないぞ！！合作",
+				"time": "19:00",
+				"site": "youtube",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/mokumokukeikoku/status/1783843482181812294"
+				}
+			}, {
+				"name": "【#25】音MADラジオ　ゲスト：owatax　#音RADIO",
+				"time": "20:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv345016355",
+					"url": "https://live.nicovideo.jp/watch/lv345016355"
+				}
+			}
+		], 
+		"2024-04-28": [
+			{
+				"name": "帰ってきた！柴又MADコンテスト in ニコニコ超会議2024【2日目】",
+				"time": null,
+				"site": "nicolive",
+				"link": {
+					"title": "告知ポスト（X）",
+					"url": "https://twitter.com/shibamata_fun/status/1771888420098641938"
+				}
+			}, {
+				"name": "『超』音MAD晒しイベント2024 Day1 #Chosarashi",
+				"time": "19:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv345006742",
+					"url": "https://live.nicovideo.jp/watch/lv345006742"
+				}
+			}
+		], 
+		"2024-04-29": [
+			{
+				"name": "『超』音MAD晒しイベント2024 Day2 #Chosarashi",
+				"time": "19:00",
+				"site": "nicolive",
+				"link": {
+					"title": "lv345006772",
+					"url": "https://live.nicovideo.jp/watch/lv345006772"
+				}
+			}
 		]
 	},
 	"lastModified": "2024-04-16T23:56+09:00"
