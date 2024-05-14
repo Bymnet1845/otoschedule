@@ -4,6 +4,8 @@ import atprotoApi from "@atproto/api";
 import fs from "fs";
 import twitterText from "twitter-text";
 
+import { getScheduleList } from "./get-schedule-list.js";
+
 dotenv.config();
 
 const { BskyAgent, RichText } = atprotoApi;
@@ -26,8 +28,7 @@ const MAX_LENGTH_OF_MISSKEY = 3000;
 const MAX_LENGTH_OF_BLUESKY = 300;
 // const MAX_LENGTH_OF_TWITTER = 280;
 
-const SCHEDULE_FILE = JSON.parse(fs.readFileSync("schedule.json").toString());
-const SCHEDULE = SCHEDULE_FILE["schedule"][TODAY];
+const SCHEDULE = await getScheduleList();
 // const SCHEDULE_LAST_MODIFIED = Date(SCHEDULE_FILE.lastModified);
 
 const TEXT_FIRST_LINE = format(NOW, "yyyy年M月d日") + DAY_OF_WEEK[NOW.getDay()] +  "の音MAD周辺配信スケジュール";
@@ -36,14 +37,14 @@ let textForMisskey = [TEXT_FIRST_LINE];
 let textForBluesky = [TEXT_FIRST_LINE];
 // let textForTwitter = [TEXT_FIRST_LINE];
 
-if (SCHEDULE !== undefined) {
+if (SCHEDULE.length >= 0) {
 	for (let plan of SCHEDULE) {
 		let planTime;
 		
-		if (plan.time === null) {
-			planTime = "時刻不明";
+		if (plan[1]) {
+			planTime = format(plan[0], "H:mm～");
 		} else {
-			planTime = plan.time + "～"
+			planTime = "時刻不明";
 		}
 
 		generateTextForMisskey(plan, planTime);
@@ -57,13 +58,13 @@ if (SCHEDULE !== undefined) {
 function generateTextForMisskey(plan, planTime) {
 	let planLink;
 
-	if (plan.link.url === null) {
+	if (plan[5] === null) {
 		planLink = "";
 	} else {
-		planLink = " ?[" + plan.link.title + "](" + plan.link.url + ")";
+		planLink = " ?[" + plan[4] + "](" + plan[5] + ")";
 	}
 
-	const PLAN_TEXT = plan.name + "\n" + planTime + planLink;
+	const PLAN_TEXT = plan[2] + "\n" + planTime + planLink;
 
 	// 既存の文字数＋追加するテキストの文字数＋改行と（続く）分の8文字
 	if ([...textForMisskey[textForMisskey.length - 1]].length + [...PLAN_TEXT].length + 8 > MAX_LENGTH_OF_MISSKEY) {
@@ -77,13 +78,13 @@ function generateTextForMisskey(plan, planTime) {
 function generateTextForBluesky(plan, planTime) {
 	let planLink;
 
-	if (plan.link.url === null) {
+	if (plan[5] === null) {
 		planLink = "";
 	} else {
-		planLink = " " + plan.link.url;
+		planLink = " " + plan[5];
 	}
 
-	const PLAN_TEXT = plan.name + "\n" + planTime + planLink;
+	const PLAN_TEXT = plan[2] + "\n" + planTime + planLink;
 	const SEGMENTED_TEXT_FOR_BLUESKY = SEGMENTER.segment(textForBluesky[textForBluesky.length - 1]);
 	const SEGMENTED_PLAN_TEXT = SEGMENTER.segment(PLAN_TEXT);
 
@@ -135,7 +136,8 @@ async function post() {
 async function postToMisskey(text, replyId) {
 	let parameters = {
 		i: MISSKEY_ACCESS_TOKEN,
-		text: text
+		text: text,
+		visibility: "public"
 	};
 
 	if (replyId !== undefined) {
