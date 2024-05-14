@@ -37,7 +37,7 @@ let textForMisskey = [TEXT_FIRST_LINE];
 let textForBluesky = [TEXT_FIRST_LINE];
 // let textForTwitter = [TEXT_FIRST_LINE];
 
-if (SCHEDULE.length >= 0) {
+if (SCHEDULE.length > 0) {
 	for (let plan of SCHEDULE) {
 		let planTime;
 		
