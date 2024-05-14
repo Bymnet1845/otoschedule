@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
 import { format, add, compareAsc } from "date-fns";
 
+dotenv.config();
+
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
 const START_UNIX_TIME = 1714143600000;
