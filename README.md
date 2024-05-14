@@ -14,9 +14,10 @@ JavaScriptで書かれています。TypeScriptではありません。
 
 1. Node.js（fetchが利用出来るバージョン。v20以上推奨？）を導入。
 2. `npm install`等で必要なパッケージをインストール。
-3. 「[example.env](example.env)」に必要事項を記入し、「.env」として保存。
-4. 「[schedule_example.json](schedule_example.json)」を「schedule.json」として保存し、そのファイルにスケジュール情報を記入。
-4. 投稿時刻にNode.jsで「[index.js](index.js)」を実行。
+3. Google スプレッドシートに、スケジュールのデータを記載したシート作成。
+4. 「[example.env](example.env)」に必要事項を記入し、「.env」として保存。
+5. 「[schedule_example.json](schedule_example.json)」を「schedule.json」として保存し、そのファイルにスケジュール情報を記入。
+6. 投稿時刻にNode.jsで「[index.js](index.js)」を実行。
 
 ## 注意事項
 
