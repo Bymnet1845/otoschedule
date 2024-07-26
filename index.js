@@ -30,6 +30,7 @@ const MAX_LENGTH_OF_BLUESKY = 300;
 
 const SCHEDULE = await getScheduleList();
 // const SCHEDULE_LAST_MODIFIED = Date(SCHEDULE_FILE.lastModified);
+SCHEDULE.sort((a, b) => a[0] - b[0]);
 
 const TEXT_FIRST_LINE = format(NOW, "yyyy年M月d日") + DAY_OF_WEEK[NOW.getDay()] +  "の音MAD周辺配信スケジュール";
 
@@ -110,7 +111,9 @@ function generateTextForBluesky(plan, planTime) {
 } */
 
 async function post() {
-	for (let text of textForMisskey) {
+	console.log(textForMisskey);
+
+	/*for (let text of textForMisskey) {
 		var replyId = await postToMisskey(text, replyId);
 	}
 
@@ -128,7 +131,7 @@ async function post() {
 				rootPost = parentPost;
 			}
 		}
-	}
+	}*/
 
 	// postToTwitter(textForTwitter);
 }
