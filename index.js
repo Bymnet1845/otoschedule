@@ -111,9 +111,7 @@ function generateTextForBluesky(plan, planTime) {
 } */
 
 async function post() {
-	console.log(textForMisskey);
-
-	/*for (let text of textForMisskey) {
+	for (let text of textForMisskey) {
 		var replyId = await postToMisskey(text, replyId);
 	}
 
@@ -131,7 +129,7 @@ async function post() {
 				rootPost = parentPost;
 			}
 		}
-	}*/
+	}
 
 	// postToTwitter(textForTwitter);
 }
