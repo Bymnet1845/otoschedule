@@ -13,6 +13,7 @@
   "dependencies": {
     "@atproto/api": "^0.9.6",
     "date-fns": "^3.3.1",
+    "discord.js": "^14.16.3",
     "dotenv": "^16.4.4",
     "tsx": "^4.7.2",
     "twitter-text": "^3.1.0"
