@@ -1,56 +1,43 @@
 import * as dotenv from "dotenv";
-import { format, add, compareAsc } from "date-fns";
+import { format } from "date-fns";
 
 dotenv.config();
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+let scheduleList = new Array();
 
-const START_UNIX_TIME = new Date(format(Date.now(), "yyyy-MM-dd'T'00:00:00")).getTime();
-const END_UNIX_TIME = START_UNIX_TIME + 86400000;
-const START_DATE_TIME = new Date(START_UNIX_TIME);
-const DATE_LINE = add(new Date(START_DATE_TIME.getFullYear(), START_DATE_TIME.getMonth(), START_DATE_TIME.getDate()), { days: 1 });
-const DAY_OF_WEEK = ["㈰", "㈪", "㈫", "㈬", "㈭", "㈮", "㈯"];
-
-export async function getScheduleList() {
-	console.log(START_UNIX_TIME);
-
-	let allScheduleList = await fetch("https://sheets.googleapis.com/v4/spreadsheets/1PI0zvp4NE4iPvmMAEYYxpX1SWphZgWCznsGe0eUMck4/values/list?valueRenderOption=UNFORMATTED_VALUE&key=" + GOOGLE_API_KEY, {
+export async function getScheduleList(startUnixTime, endUnixTime) {
+	let scheduleSheet = await fetch("https://sheets.googleapis.com/v4/spreadsheets/1PI0zvp4NE4iPvmMAEYYxpX1SWphZgWCznsGe0eUMck4/values/list?valueRenderOption=UNFORMATTED_VALUE&key=" + GOOGLE_API_KEY, {
 		method: "GET"
-	}).then(response => {
+	}).then((response) => {
 		return response.json();
-	}).then(json => {
+	}).then((json) => {
 		return json;
 	});
 
-	return allScheduleList.values.filter(schedule => schedule[0] >= START_UNIX_TIME && schedule[0] <= END_UNIX_TIME);
-	
-	// let dailyScheduleText = format(START_DATE_TIME, "yyyy年M月d日") + DAY_OF_WEEK[START_DATE_TIME.getDay()] + format(START_DATE_TIME, " H:mm") + "からの音MAD周辺配信スケジュール";
-
-	/* dailyScheduleList.forEach(schedule => {
-		let scheduleDateTime = new Date(schedule[0]);
-		let scheduleTimeText;
-
-		
-		if (compareAsc(scheduleDateTime, DATE_LINE) < 0) {
-			switch (schedule[1]) {
-				case true:
-					scheduleTimeText = format(scheduleDateTime, "H:mm～");
-					break;
-				case false:
-					scheduleTimeText = "本日中";
+	scheduleSheet.values
+		.filter((schedule) => schedule[0] >= startUnixTime && schedule[0] <= endUnixTime)
+		.sort((schedule1, schedule2) => {
+			if (schedule1[0] < schedule2[0]) {
+				return -1;
+			} else {
+				return 0;
 			}
-		} else {
-			switch (schedule[1]) {
-				case true:
-					scheduleTimeText = Number(format(scheduleDateTime, "H")) + 24 + format(scheduleDateTime, ":mm～");
-					break;
-				case false:
-					scheduleTimeText = "明日中";
-			}
-		}
-		
-		dailyScheduleText += "\n\n" + schedule[2] + "\n" + scheduleTimeText + " " + schedule[5];
-	});
+		})
+		.forEach((schedule1) => {
+			let schedule2 = {
+				title: schedule1[2],
+				url: schedule1[5]
+			};
 
-	console.log(dailyScheduleText); */
+			if (schedule1[1]) {
+				schedule2.time = format(schedule1[0], "yyyy-MM-dd HH:mm");
+			} else {
+				schedule2.time = format(schedule1[0], "yyyy-MM-dd") + " 時刻不明";
+			}
+
+			scheduleList.push(schedule2);
+		});
+
+	return scheduleList;
 }
