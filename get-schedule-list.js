@@ -17,13 +17,7 @@ export async function getScheduleList(startUnixTime, endUnixTime) {
 
 	scheduleSheet.values
 		.filter((schedule) => schedule[0] >= startUnixTime && schedule[0] <= endUnixTime)
-		.sort((schedule1, schedule2) => {
-			if (schedule1[0] < schedule2[0]) {
-				return -1;
-			} else {
-				return 0;
-			}
-		})
+		.sort((schedule1, schedule2) => schedule1[0] - schedule2[0])
 		.forEach((schedule1) => {
 			let schedule2 = {
 				title: schedule1[2],
