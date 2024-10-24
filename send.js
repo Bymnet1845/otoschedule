@@ -37,7 +37,6 @@ export default class Sender {
 			};
 
 			if (beforePostId !== undefined) parameters.replyId = beforePostId;
-			console.log(beforePostId);
 
 			return await fetch(MISSKEY_INSTANCE + "/api/notes/create", {
 				method: "POST",
