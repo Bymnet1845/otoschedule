@@ -18,7 +18,7 @@ export default class Sender {
 		this.scheduleList.forEach((schedule) => {
 			let scheduleText = "\n\n" + schedule.time + "\n" + schedule.title + "\n" + schedule.url;
 
-			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 6 > 200) {
+			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 6 > 3000) {
 				messageList[messageList.length - 1] += "\n\n（続く）";
 				messageList.push(scheduleText);
 			} else {
