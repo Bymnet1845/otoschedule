@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { format } from "date-fns";
 
 dotenv.config();
 
@@ -30,23 +31,28 @@ export default class Sender {
 		}
 
 		async function post(message, beforePostId) {
-			let parameters = {
-				i: MISSKEY_ACCESS_TOKEN,
-				text: message,
-				visibility: "specified"
-			};
+			try {
+				let parameters = {
+					i: MISSKEY_ACCESS_TOKEN,
+					text: message,
+					visibility: "specified"
+				};
 
-			if (beforePostId !== undefined) parameters.replyId = beforePostId;
+				if (beforePostId !== undefined) parameters.replyId = beforePostId;
 
-			return await fetch(MISSKEY_INSTANCE + "/api/notes/create", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(parameters)
-			}).then((response) => {
-				return response.json();
-			}).then((json) => {
-				return json.createdNote.id;
-			});
+				return await fetch(MISSKEY_INSTANCE + "/api/notes/create", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(parameters)
+				}).then((response) => {
+					return response.json();
+				}).then((json) => {
+					return json.createdNote.id;
+				});
+			} catch (error) {
+				console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+				console.error(error);
+			}
 		}
 	}
 }
