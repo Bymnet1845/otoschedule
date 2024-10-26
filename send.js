@@ -18,13 +18,13 @@ export default class Sender {
 		let beforePostId;
 
 		this.scheduleList.forEach((schedule) => {
-			let scheduleText = "\n\n" + schedule.time + "\n" + schedule.title + "\n" + schedule.url;
+			let scheduleText = schedule.time + "\n" + schedule.title + "\n" + schedule.url;
 
-			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 6 > 3000) {
+			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 8 > 3000) {
 				messageList[messageList.length - 1] += "\n\n（続く）";
 				messageList.push(scheduleText);
 			} else {
-				messageList[messageList.length - 1] += scheduleText;
+				messageList[messageList.length - 1] += "\n\n" + scheduleText;
 			}
 		});
 
@@ -68,15 +68,15 @@ export default class Sender {
 		let rootPost, parentPost;
 
 		this.scheduleList.forEach((schedule) => {
-			const SCHEDULE_TEXT = "\n\n" + schedule.time + "\n" + schedule.title + "\n" + schedule.url;
+			const SCHEDULE_TEXT = schedule.time + "\n" + schedule.title + "\n" + schedule.url;
 			const SEGMENTED_SCHEDULE_TEXT = SEGMENTER.segment(SCHEDULE_TEXT);
 			const SEGMENTED_LAST_MESSAGE = SEGMENTER.segment(messageList[messageList.length - 1]);
 
-			if ([...SEGMENTED_LAST_MESSAGE].length + [...SEGMENTED_SCHEDULE_TEXT].length + 6 > 300) {
+			if ([...SEGMENTED_LAST_MESSAGE].length + [...SEGMENTED_SCHEDULE_TEXT].length + 8 > 300) {
 				messageList[messageList.length - 1] += "\n\n（続く）";
 				messageList.push(SCHEDULE_TEXT);
 			} else {
-				messageList[messageList.length - 1] += SCHEDULE_TEXT;
+				messageList[messageList.length - 1] += "\n\n" + SCHEDULE_TEXT;
 			}
 		});
 
