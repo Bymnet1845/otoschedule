@@ -1,5 +1,7 @@
 import * as dotenv from "dotenv";
 import { format } from "date-fns";
+import atprotoApi from "@atproto/api";
+const { BskyAgent, RichText } = atprotoApi;
 
 dotenv.config();
 
@@ -53,6 +55,66 @@ export default class Sender {
 				console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
 				console.error(error);
 			}
+		}
+	}
+
+	async sendToBluesky() {
+		const BLUESKY_SERVICE = process.env.BLUESKY_SERVICE;
+		const BLUESKY_IDENTIFIER = process.env.BLUESKY_IDENTIFIER;
+		const BLUESKY_APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD;
+		const BLUESKY_AGENT = new BskyAgent({ service: BLUESKY_SERVICE });
+		const SEGMENTER = new Intl.Segmenter("ja", { granularity: "grapheme" });
+		let messageList = [this.preface];
+		let rootPost, parentPost;
+
+		this.scheduleList.forEach((schedule) => {
+			const SCHEDULE_TEXT = "\n\n" + schedule.time + "\n" + schedule.title + "\n" + schedule.url;
+			const SEGMENTED_SCHEDULE_TEXT = SEGMENTER.segment(SCHEDULE_TEXT);
+			const SEGMENTED_LAST_MESSAGE = SEGMENTER.segment(messageList[messageList.length - 1]);
+
+			if ([...SEGMENTED_LAST_MESSAGE].length + [...SEGMENTED_SCHEDULE_TEXT].length + 6 > 300) {
+				messageList[messageList.length - 1] += "\n\n（続く）";
+				messageList.push(SCHEDULE_TEXT);
+			} else {
+				messageList[messageList.length - 1] += SCHEDULE_TEXT;
+			}
+		});
+
+		console.log(messageList);
+
+		try {
+			await BLUESKY_AGENT.login({
+				identifier: BLUESKY_IDENTIFIER,
+				password: BLUESKY_APP_PASSWORD
+			});
+
+			for (let i = 0; i < messageList.length; i++) {
+				parentPost = await post(messageList[i], rootPost, parentPost);
+				if (i === 0) rootPost = parentPost;
+			}
+		} catch (error) {
+			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+			console.error(error);
+		}
+
+		async function post(message, rootPost, parentPost) {
+			const RICH_TEXT = new RichText({ text: message });
+			await RICH_TEXT.detectFacets(BLUESKY_AGENT);
+
+			let parameters = {
+				text: RICH_TEXT.text,
+				facets: RICH_TEXT.facets,
+				langs: ["ja-JP"]
+			};
+
+			if (rootPost !== undefined) {
+				parameters.reply = {
+					root: rootPost,
+					parent: parentPost
+				}
+			}
+
+			return await BLUESKY_AGENT.post(parameters);
 		}
 	}
 }
