@@ -14,11 +14,11 @@ export default class Sender {
 	async sendToMisskey() {
 		const MISSKEY_INSTANCE = process.env.MISSKEY_INSTANCE;
 		const MISSKEY_ACCESS_TOKEN = process.env.MISSKEY_ACCESS_TOKEN;
-		let messageList = [this.preface];
+		let messageList = [this.preface.mfm];
 		let beforePostId;
 
 		this.scheduleList.forEach((schedule) => {
-			let scheduleText = schedule.time + "\n" + schedule.title + "\n" + schedule.url;
+			let scheduleText = `${schedule.time}\n**<plain>${schedule.title}</plain>**\n[${schedule.link.title}](${schedule.link.url})`;
 
 			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 8 > 3000) {
 				messageList[messageList.length - 1] += "\n\n（続く）";
@@ -64,11 +64,11 @@ export default class Sender {
 		const BLUESKY_APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD;
 		const BLUESKY_AGENT = new BskyAgent({ service: BLUESKY_SERVICE });
 		const SEGMENTER = new Intl.Segmenter("ja", { granularity: "grapheme" });
-		let messageList = [this.preface];
+		let messageList = [this.preface.plain];
 		let rootPost, parentPost;
 
 		this.scheduleList.forEach((schedule) => {
-			const SCHEDULE_TEXT = schedule.time + "\n" + schedule.title + "\n" + schedule.url;
+			const SCHEDULE_TEXT = schedule.time + "\n" + schedule.title + "\n" + schedule.link.url;
 			const SEGMENTED_SCHEDULE_TEXT = SEGMENTER.segment(SCHEDULE_TEXT);
 			const SEGMENTED_LAST_MESSAGE = SEGMENTER.segment(messageList[messageList.length - 1]);
 
