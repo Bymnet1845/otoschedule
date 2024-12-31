@@ -144,13 +144,21 @@ export default class Sender {
 	}
 
 	sendToDiscord(client, channelId) {
-		this.discordMessageList.forEach((massage) => {
-			client.channels.cache.get(channelId).send(massage);
-		});
+		try {
+			this.discordMessageList.forEach((massage) => { client.channels.cache.get(channelId).send(massage); });
+		} catch (error) {
+			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+			console.error(error);
+		}
 	}
 
 	async replyToDiscord(interaction) {
-		await interaction.reply(this.discordMessageList[0]);
-		for (let i = 1; i < this.discordMessageList.length; i++) await interaction.followUp(this.discordMessageList[i]);
+		try {
+			await interaction.reply(this.discordMessageList[0]);
+			for (let i = 1; i < this.discordMessageList.length; i++) await interaction.followUp(this.discordMessageList[i]);
+		} catch (error) {
+			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+			console.error(error);
+		}
 	}
 }
