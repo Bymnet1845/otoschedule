@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 import { format } from "date-fns";
 import atprotoApi from "@atproto/api";
+import { Client, Events, GatewayIntentBits, heading, bold, hyperlink } from "discord.js";
 const { BskyAgent, RichText } = atprotoApi;
 
 dotenv.config();
@@ -116,5 +117,39 @@ export default class Sender {
 
 			return await BLUESKY_AGENT.post(parameters);
 		}
+	}
+
+	sendToDiscord(channelId) {
+		const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+		const DISCORD_CLIENT = new Client({ intents: [GatewayIntentBits.Guilds] });
+		let messageList = [this.preface.plain];
+
+		this.scheduleList.forEach((schedule) => {
+			let scheduleLink;
+
+			if (schedule.link.hasTitle) {
+				scheduleLink = hyperlink(schedule.link.title, schedule.link.url);
+			} else {
+				scheduleLink = schedule.link.url;
+			}
+
+			let scheduleText = heading(schedule.title, 2) + "\n" + schedule.time + "\n" + scheduleLink;
+
+			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 1 > 2000) {
+				messageList.push(scheduleText);
+			} else {
+				messageList[messageList.length - 1] += "\n" + scheduleText;
+			}
+		});
+		
+		DISCORD_CLIENT.once(Events.ClientReady, (client) => {
+			console.log(`準備OKです! ${client.user.tag}がログインします。`);
+
+			messageList.forEach((massage) => {
+				DISCORD_CLIENT.channels.cache.get(channelId).send(massage);
+			});
+		});
+		
+		DISCORD_CLIENT.login(DISCORD_TOKEN);
 	}
 }

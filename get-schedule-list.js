@@ -26,7 +26,8 @@ export async function getScheduleList(startUnixTime, endUnixTime, dateTextEnable
 
 				link: {
 					url: schedule1[5],
-					title: schedule1[4]
+					title: schedule1[4],
+					hasTitle: schedule1[6]
 				}
 			};
 
