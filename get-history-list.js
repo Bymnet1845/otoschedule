@@ -20,8 +20,8 @@ export async function getHistoryList(startUnixTime, endUnixTime) {
 		.sort((history1, history2) => (history1[0] - history2[0]) * -1)
 		.forEach((history1) => {
 			let history2 = {
-				scheduleId: history1[1],
-				isOverwrite: history1[2],
+				id: history1[1],
+				type: "",
 				title: history1[5],
 				service: history1[6],
 				time: "",
@@ -31,6 +31,12 @@ export async function getHistoryList(startUnixTime, endUnixTime) {
 					hasTitle: history1[9]
 				}
 			};
+			
+			if (history1[2]) {
+				history2.type = "【情報変更】";
+			} else {
+				history2.type = "【新規追加】";
+			}
 			
 			if (history1[4]) {
 				history2.time += format(history1[3], "yyyy-MM-dd HH:mm");
@@ -42,8 +48,8 @@ export async function getHistoryList(startUnixTime, endUnixTime) {
 
 			if (HISTORY_LIST_CHECKING_RESULT === -1) {
 				historyList.push(history2);
-			} else if (history2.isOverwrite === false) {
-				historyList[HISTORY_LIST_CHECKING_RESULT].isOverwrite = false;
+			} else if (history2.type === "【新規追加】") {
+				historyList[HISTORY_LIST_CHECKING_RESULT].type = "【新規追加】";
 			}
 		});
 
