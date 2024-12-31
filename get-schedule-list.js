@@ -6,7 +6,7 @@ dotenv.config();
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 let scheduleList = new Array();
 
-export async function getScheduleList(startUnixTime, endUnixTime, dateTextEnabled, thirtyHoursSystemEnabled) {
+export async function getScheduleList(startUnixTime, endUnixTime, dateTextEnabled, twentyEightHoursSystemEnabled) {
 	let scheduleSheet = await fetch("https://sheets.googleapis.com/v4/spreadsheets/1PI0zvp4NE4iPvmMAEYYxpX1SWphZgWCznsGe0eUMck4/values/list?valueRenderOption=UNFORMATTED_VALUE&key=" + GOOGLE_API_KEY, {
 		method: "GET"
 	}).then((response) => {
@@ -36,14 +36,14 @@ export async function getScheduleList(startUnixTime, endUnixTime, dateTextEnable
 				const SCHEDULE_DATE_TIME = new Date(schedule1[0]);
 				if (dateTextEnabled) schedule2.time += format(schedule1[0], "yyyy-MM-dd ");
 
-				if (thirtyHoursSystemEnabled) {
+				if (twentyEightHoursSystemEnabled) {
 					schedule2.time += ("0" + (START_DATE_TIME.getDate() === SCHEDULE_DATE_TIME.getDate() ? SCHEDULE_DATE_TIME.getHours() : SCHEDULE_DATE_TIME.getHours() + 24)).slice(-2);
 				} else {
 					schedule2.time += format(schedule1[0], "HH");
 				}
 				
 				schedule2.time += format(schedule1[0], ":mm");
-				if (thirtyHoursSystemEnabled && START_DATE_TIME.getDate() !== SCHEDULE_DATE_TIME.getDate()) schedule2.time += " (" + format(schedule1[0], "HH:mm") + ")";
+				if (twentyEightHoursSystemEnabled && START_DATE_TIME.getDate() !== SCHEDULE_DATE_TIME.getDate()) schedule2.time += " (" + format(schedule1[0], "HH:mm") + ")";
 			} else {
 				if (dateTextEnabled) schedule2.time += format(schedule1[0], "yyyy-MM-dd ");
 				schedule2.time += "時刻不明";
