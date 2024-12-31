@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { format } from "date-fns";
 import atprotoApi from "@atproto/api";
-import { Client, Events, GatewayIntentBits, heading, bold, hyperlink } from "discord.js";
+import { heading, hyperlink } from "discord.js";
 const { BskyAgent, RichText } = atprotoApi;
 
 dotenv.config();
