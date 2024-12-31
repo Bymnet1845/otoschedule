@@ -119,8 +119,16 @@ export default class Sender {
 		}
 	}
 
-	setDiscordOption() {
-		let messageList = [this.preface.plain];
+	setDiscordOption(userIds = new Array()) {
+		let messageList = new Array();
+
+		if (userIds.length > 0) {
+			let mentionText = "";
+			userIds.forEach((userId) => { mentionText += "<\@" + userId + "> " });
+			messageList.push(mentionText + "\n" + this.preface.plain);
+		} else {
+			messageList.push(this.preface.plain);
+		}
 
 		this.scheduleList.forEach((schedule) => {
 			let scheduleLink;
@@ -144,8 +152,10 @@ export default class Sender {
 	}
 
 	sendToDiscord(client, channelId) {
+		let messageList = this.discordMessageList;
+
 		try {
-			this.discordMessageList.forEach((massage) => { client.channels.cache.get(channelId).send(massage); });
+			messageList.forEach((message) => { client.channels.cache.get(channelId).send(message) });
 		} catch (error) {
 			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
 			console.error(error);
@@ -153,9 +163,11 @@ export default class Sender {
 	}
 
 	async replyToDiscord(interaction) {
+		let messageList = this.discordMessageList;
+
 		try {
-			await interaction.reply(this.discordMessageList[0]);
-			for (let i = 1; i < this.discordMessageList.length; i++) await interaction.followUp(this.discordMessageList[i]);
+			await interaction.reply(messageList[0]);
+			for (let i = 1; i < messageList.length; i++) await interaction.followUp(messageList[i]);
 		} catch (error) {
 			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
 			console.error(error);
