@@ -119,9 +119,7 @@ export default class Sender {
 		}
 	}
 
-	sendToDiscord(channelId) {
-		const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-		const DISCORD_CLIENT = new Client({ intents: [GatewayIntentBits.Guilds] });
+	setDiscordOption() {
 		let messageList = [this.preface.plain];
 
 		this.scheduleList.forEach((schedule) => {
@@ -141,15 +139,18 @@ export default class Sender {
 				messageList[messageList.length - 1] += "\n" + scheduleText;
 			}
 		});
-		
-		DISCORD_CLIENT.once(Events.ClientReady, (client) => {
-			console.log(`準備OKです! ${client.user.tag}がログインします。`);
 
-			messageList.forEach((massage) => {
-				DISCORD_CLIENT.channels.cache.get(channelId).send(massage);
-			});
+		this.discordMessageList = messageList;
+	}
+
+	sendToDiscord(client, channelId) {
+		this.discordMessageList.forEach((massage) => {
+			client.channels.cache.get(channelId).send(massage);
 		});
-		
-		DISCORD_CLIENT.login(DISCORD_TOKEN);
+	}
+
+	async replyToDiscord(interaction) {
+		await interaction.reply(this.discordMessageList[0]);
+		for (let i = 1; i < this.discordMessageList.length; i++) await interaction.followUp(this.discordMessageList[i]);
 	}
 }
