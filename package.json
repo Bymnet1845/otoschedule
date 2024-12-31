@@ -18,6 +18,7 @@
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.4",
     "japanese-holidays": "^1.0.10",
+    "mysql": "^2.18.1",
     "node-cron": "^3.0.3",
     "tsx": "^4.7.2",
     "twitter-text": "^3.1.0"
