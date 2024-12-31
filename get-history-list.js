@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { format } from "date-fns";
 
 dotenv.config();
 
@@ -16,15 +17,34 @@ export async function getHistoryList(startUnixTime, endUnixTime) {
 
 	historySheet.values
 		.filter((history) => history[0] >= startUnixTime && history[0] <= endUnixTime)
-		.sort((history1, history2) => history1[0] - history2[0])
+		.sort((history1, history2) => (history1[0] - history2[0]) * -1)
 		.forEach((history1) => {
 			let history2 = {
-				time: history1[0],
-				schedule: history1[1],
-				isOverwrite: history1[2]
+				scheduleId: history1[1],
+				isOverwrite: history1[2],
+				title: history1[5],
+				service: history1[6],
+				time: "",
+				link: {
+					url: history1[8],
+					title: history1[7],
+					hasTitle: history1[9]
+				}
 			};
+			
+			if (history1[4]) {
+				history2.time += format(history1[3], "yyyy-MM-dd HH:mm");
+			} else {
+				history2.time += format(history1[3], "yyyy-MM-dd 時刻不明");
+			}
 
-			historyList.push(history2);
+			const HISTORY_LIST_CHECKING_RESULT = historyList.findIndex((history) => history.scheduleId === history2.scheduleId);
+
+			if (HISTORY_LIST_CHECKING_RESULT === -1) {
+				historyList.push(history2);
+			} else if (history2.isOverwrite === false) {
+				historyList[HISTORY_LIST_CHECKING_RESULT].isOverwrite = false;
+			}
 		});
 
 	return historyList;
