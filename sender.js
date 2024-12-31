@@ -19,7 +19,7 @@ export default class Sender {
 		let beforePostId;
 
 		this.scheduleList.forEach((schedule) => {
-			let scheduleText = `${schedule.time}\n**<plain>${schedule.title}</plain>**\n[${schedule.link.title}](${schedule.link.url})`;
+			let scheduleText = `${schedule.type ? schedule.type : ""}${schedule.time}\n**<plain>${schedule.title}</plain>**\n[${schedule.link.title}](${schedule.link.url})`;
 
 			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 8 > 3000) {
 				messageList[messageList.length - 1] += "\n\n（続く）";
@@ -69,7 +69,7 @@ export default class Sender {
 		let rootPost, parentPost;
 
 		this.scheduleList.forEach((schedule) => {
-			const SCHEDULE_TEXT = schedule.time + "\n" + schedule.title + "\n" + schedule.link.url;
+			const SCHEDULE_TEXT = (schedule.type ? schedule.type : "") + schedule.time + "\n" + schedule.title + "\n" + schedule.link.url;
 			const SEGMENTED_SCHEDULE_TEXT = SEGMENTER.segment(SCHEDULE_TEXT);
 			const SEGMENTED_LAST_MESSAGE = SEGMENTER.segment(messageList[messageList.length - 1]);
 
@@ -133,7 +133,7 @@ export default class Sender {
 				scheduleLink = schedule.link.url;
 			}
 
-			let scheduleText = heading(schedule.title, 2) + "\n" + schedule.time + "\n" + scheduleLink;
+			let scheduleText = heading(schedule.title, 2) + "\n" + (schedule.type ? schedule.type : "") + schedule.time + "\n" + scheduleLink;
 
 			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 1 > 2000) {
 				messageList.push(scheduleText);
