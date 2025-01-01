@@ -119,10 +119,10 @@ export default class Sender {
 		}
 	}
 
-	setDiscordOption(userIds = new Array()) {
+	setDiscordOption(userIds) {
 		let messageList = new Array();
 
-		if (userIds.length > 0) {
+		if (userIds) {
 			let mentionText = "";
 			userIds.forEach((userId) => { mentionText += "<\@" + userId + "> " });
 			messageList.push(mentionText + "\n" + this.preface.plain);
