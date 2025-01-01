@@ -62,12 +62,14 @@ export const SettingsCommand = {
 									const USER_ID = interaction.options.getUser("user").id;
 									let data = JSON.parse(results[0]["mentions"]);
 
-									if (data.users.includes(USER_ID)) {
+									if (data && data.users && data.users.includes(USER_ID)) {
 										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + USER_ID + "> は既に登録されています。" }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 										MYSQL_CONNECTION.end();
 									} else {
+										if (!data) data = new Object();
+										if (!data.users) data.users = new Array();
 										data.users.push(USER_ID);
 
 										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
