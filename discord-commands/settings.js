@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { format } from "date-fns";
 import mysql from "mysql";
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, heading, unorderedList, userMention, roleMention } from "discord.js";
 import Sender from "../sender.js";
 
 dotenv.config();
@@ -23,6 +23,7 @@ export const SettingsCommand = {
 							.setName("add-role").setDescription("自動通知のメンション対象ロールを追加します。")
 							.addRoleOption(option => option.setName("role").setDescription("ロールを指定して下さい。").setRequired(true))
 					)
+					.addSubcommand(subcommand => subcommand.setName("list").setDescription("自動通知のメンション対象の一覧を表示します。"))
 			),
 	execute:
 		async function (interaction) {
@@ -90,6 +91,7 @@ export const SettingsCommand = {
 							});
 
 							break;
+
 						case "add-role":
 							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 								if (error) {
@@ -124,6 +126,54 @@ export const SettingsCommand = {
 												MYSQL_CONNECTION.end();
 											}
 										});
+									}
+								}
+							});
+
+							break;
+
+						case "list":
+							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
+								if (error) {
+									console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+									console.error(error);
+									MYSQL_CONNECTION.end();
+									return;
+								} else {
+									let data = JSON.parse(results[0]["mentions"]);
+
+									if (data) {
+										let preface = { plain: "" };
+
+										if (!data.users && !data.roles && data.users.length === 0 && data.roles.length === 0) {
+											preface.plain = "自動通知のメンション対象は登録されていません。";
+										} else {
+											preface.plain += "自動通知のメンション対象は次の通りです。";
+
+											if (data.users && data.users.length > 0) {
+												preface.plain += "\n" + heading("ユーザー", 2) + "\n";
+												let userMentions = new Array();
+												data.users.forEach((user) => { userMentions.push(userMention(user)) });
+												preface.plain += unorderedList(userMentions);
+											}
+
+											if (data.roles&& data.roles.length > 0) {
+												preface.plain += "\n" + heading("ロール", 2) + "\n";
+												let roleMentions = new Array();
+												data.roles.forEach((role) => { roleMentions.push(roleMention(role)) });
+												preface.plain += unorderedList(roleMentions);
+											}
+										}
+
+										const SENDER = new Sender(preface, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+										MYSQL_CONNECTION.end();
+									} else {
+										const SENDER = new Sender({ plain: "自動通知のメンション対象は登録されていません。" }, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+										MYSQL_CONNECTION.end();
 									}
 								}
 							});
