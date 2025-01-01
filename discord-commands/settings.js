@@ -16,7 +16,12 @@ export const SettingsCommand = {
 					.addSubcommand(subcommand =>
 						subcommand
 							.setName("add-user").setDescription("自動通知のメンション対象ユーザーを追加します。")
-							.addUserOption(option => option.setName("user").setDescription("ユーザーを追加します。").setRequired(true))
+							.addUserOption(option => option.setName("user").setDescription("ユーザーを指定して下さい。").setRequired(true))
+					)
+					.addSubcommand(subcommand =>
+						subcommand
+							.setName("add-role").setDescription("自動通知のメンション対象ロールを追加します。")
+							.addRoleOption(option => option.setName("role").setDescription("ロールを指定して下さい。").setRequired(true))
 					)
 			),
 	execute:
@@ -73,6 +78,45 @@ export const SettingsCommand = {
 												return;
 											} else {
 												const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + USER_ID + "> を追加しました。" }, []);
+												SENDER.setDiscordOption();
+												SENDER.replyToDiscord(interaction);
+												MYSQL_CONNECTION.end();
+											}
+										});
+									}
+								}
+							});
+
+							break;
+						case "add-role":
+							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
+								if (error) {
+									console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+									console.error(error);
+									MYSQL_CONNECTION.end();
+									return;
+								} else {
+									const ROLE_ID = interaction.options.getRole("role").id;
+									let data = JSON.parse(results[0]["mentions"]);
+
+									if (data && data.roles && data.roles.includes(ROLE_ID)) {
+										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@&" + ROLE_ID + "> は既に登録されています。" }, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+										MYSQL_CONNECTION.end();
+									} else {
+										if (!data) data = new Object();
+										if (!data.roles) data.roles = new Array();
+										data.roles.push(ROLE_ID);
+
+										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
+											if (error) {
+												console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+												console.error(error);
+												MYSQL_CONNECTION.end();
+												return;
+											} else {
+												const SENDER = new Sender({ plain: "自動通知のメンション対象に <@&" + ROLE_ID + "> を追加しました。" }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
 												MYSQL_CONNECTION.end();
