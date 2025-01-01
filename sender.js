@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { format } from "date-fns";
 import atprotoApi from "@atproto/api";
-import { heading, hyperlink } from "discord.js";
+import { heading, hyperlink, MessageFlags } from "discord.js";
 const { BskyAgent, RichText } = atprotoApi;
 
 dotenv.config();
@@ -167,8 +167,8 @@ export default class Sender {
 		let messageList = this.discordMessageList;
 
 		try {
-			await interaction.reply(messageList[0]);
-			for (let i = 1; i < messageList.length; i++) await interaction.followUp(messageList[i]);
+			await interaction.reply({ content: messageList[0], flags: MessageFlags.Ephemeral });
+			for (let i = 1; i < messageList.length; i++) await interaction.followUp({ content: messageList[i], flags: MessageFlags.Ephemeral });
 		} catch (error) {
 			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
 			console.error(error);
