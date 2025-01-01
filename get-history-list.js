@@ -44,7 +44,7 @@ export async function getHistoryList(startUnixTime, endUnixTime) {
 				history2.time += format(history1[3], "yyyy-MM-dd 時刻不明");
 			}
 
-			const HISTORY_LIST_CHECKING_RESULT = historyList.findIndex((history) => history.scheduleId === history2.scheduleId);
+			const HISTORY_LIST_CHECKING_RESULT = historyList.findIndex((history) => history.id === history2.id);
 
 			if (HISTORY_LIST_CHECKING_RESULT === -1) {
 				historyList.push(history2);
