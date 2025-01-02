@@ -6,7 +6,7 @@ dotenv.config();
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 let scheduleList = new Array();
 
-export async function getScheduleList(startUnixTime, endUnixTime, dateTextEnabled, twentyEightHoursSystemEnabled) {
+export default async function getScheduleList(startUnixTime, endUnixTime, dateTextEnabled, twentyEightHoursSystemEnabled) {
 	let scheduleSheet = await fetch("https://sheets.googleapis.com/v4/spreadsheets/1PI0zvp4NE4iPvmMAEYYxpX1SWphZgWCznsGe0eUMck4/values/list?valueRenderOption=UNFORMATTED_VALUE&key=" + GOOGLE_API_KEY, {
 		method: "GET"
 	}).then((response) => {
