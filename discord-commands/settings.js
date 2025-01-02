@@ -68,14 +68,12 @@ export const SettingsCommand = {
 									const USER_ID = interaction.options.getUser("user").id;
 									let data = JSON.parse(results[0]["mentions"]);
 
-									if (data && data.users && data.users.includes(USER_ID)) {
+									if (data.users.includes(USER_ID)) {
 										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + USER_ID + "> は既に登録されています。" }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 										MYSQL_CONNECTION.end();
 									} else {
-										if (!data) data = new Object();
-										if (!data.users) data.users = new Array();
 										data.users.push(USER_ID);
 
 										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
@@ -108,14 +106,12 @@ export const SettingsCommand = {
 									const ROLE_ID = interaction.options.getRole("role").id;
 									let data = JSON.parse(results[0]["mentions"]);
 
-									if (data && data.roles && data.roles.includes(ROLE_ID)) {
+									if (data.roles.includes(ROLE_ID)) {
 										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@&" + ROLE_ID + "> は既に登録されています。" }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 										MYSQL_CONNECTION.end();
 									} else {
-										if (!data) data = new Object();
-										if (!data.roles) data.roles = new Array();
 										data.roles.push(ROLE_ID);
 
 										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
@@ -148,29 +144,27 @@ export const SettingsCommand = {
 									const USER_ID = interaction.options.getUser("user").id;
 									let data = JSON.parse(results[0]["mentions"]);
 
-									if (data && data.users) {
-										if (data.users.includes(USER_ID)) {
-											data.users.splice(data.users.findIndex((user) => { user === USER_ID }), 1);
+									if (data.users.includes(USER_ID)) {
+										data.users.splice(data.users.findIndex((user) => { user === USER_ID }), 1);
 
-											MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
-												if (error) {
-													console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-													console.error(error);
-													MYSQL_CONNECTION.end();
-													return;
-												} else {
-													const SENDER = new Sender({ plain: "自動通知のメンション対象から <@" + USER_ID + "> を削除しました。" }, []);
-													SENDER.setDiscordOption();
-													SENDER.replyToDiscord(interaction);
-													MYSQL_CONNECTION.end();
-												}
-											});
-										} else {
-											const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + USER_ID + "> は登録されていません。" }, []);
-											SENDER.setDiscordOption();
-											SENDER.replyToDiscord(interaction);
-											MYSQL_CONNECTION.end();
-										}
+										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
+											if (error) {
+												console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
+												console.error(error);
+												MYSQL_CONNECTION.end();
+												return;
+											} else {
+												const SENDER = new Sender({ plain: "自動通知のメンション対象から <@" + USER_ID + "> を削除しました。" }, []);
+												SENDER.setDiscordOption();
+												SENDER.replyToDiscord(interaction);
+												MYSQL_CONNECTION.end();
+											}
+										});
+									} else {
+										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + USER_ID + "> は登録されていません。" }, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+										MYSQL_CONNECTION.end();
 									}
 								}
 							});
@@ -190,19 +184,19 @@ export const SettingsCommand = {
 									if (data) {
 										let preface = { plain: "" };
 
-										if (!data.users && !data.roles && data.users.length === 0 && data.roles.length === 0) {
+										if (data.users.length === 0 && data.roles.length === 0) {
 											preface.plain = "自動通知のメンション対象は登録されていません。";
 										} else {
 											preface.plain += "自動通知のメンション対象は次の通りです。";
 
-											if (data.users && data.users.length > 0) {
+											if (data.users.length > 0) {
 												preface.plain += "\n" + heading("ユーザー", 2) + "\n";
 												let userMentions = new Array();
 												data.users.forEach((user) => { userMentions.push(userMention(user)) });
 												preface.plain += unorderedList(userMentions);
 											}
 
-											if (data.roles&& data.roles.length > 0) {
+											if (data.roles.length > 0) {
 												preface.plain += "\n" + heading("ロール", 2) + "\n";
 												let roleMentions = new Array();
 												data.roles.forEach((role) => { roleMentions.push(roleMention(role)) });
