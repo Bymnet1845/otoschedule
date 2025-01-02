@@ -6,15 +6,13 @@ import { SettingsCommand } from "./discord-commands/settings.js";
 
 dotenv.config();
 const DISCORD_APPLICATION_ID = process.env.DISCORD_APPLICATION_ID;
-const DISCORD_GUIDE_ID = process.env.DISCORD_GUIDE_ID;
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-
 const COMMANDS = [SettingsCommand.data.toJSON()];
 const DISCORD_REST = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
 
 (async function () {
     try {
-        await DISCORD_REST.put(Routes.applicationGuildCommands(DISCORD_APPLICATION_ID, DISCORD_GUIDE_ID), { body: COMMANDS });
+        await DISCORD_REST.put(Routes.applicationCommands(DISCORD_APPLICATION_ID), { body: COMMANDS });
 		outputLog("Discordのコマンドが登録されました。");
     } catch (error) {
 		outputLog(error, "error");
