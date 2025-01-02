@@ -150,9 +150,7 @@ export const SettingsCommand = {
 
 									if (data && data.users) {
 										if (data.users.includes(USER_ID)) {
-											console.log(USER_ID);
-											console.log(data.users);
-											data.users.splice(data.users.findIndex(USER_ID), 1);
+											data.users.splice(data.users.findIndex((user) => { user === USER_ID }), 1);
 
 											MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 												if (error) {
