@@ -1,9 +1,8 @@
 import * as dotenv from "dotenv";
-import { format } from "date-fns";
 import atprotoApi from "@atproto/api";
-import { heading, hyperlink, MessageFlags } from "discord.js";
-import outputLog from "./output-log";
 const { BskyAgent, RichText } = atprotoApi;
+import { MessageFlags, heading, hyperlink } from "discord.js";
+import outputLog from "./output-log";
 
 dotenv.config();
 

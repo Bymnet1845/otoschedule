@@ -1,9 +1,8 @@
 import * as dotenv from "dotenv";
-import { format } from "date-fns";
 import mysql from "mysql";
 import { SlashCommandBuilder, heading, unorderedList, userMention, roleMention } from "discord.js";
-import Sender from "../sender.js";
 import outputLog from "../output-log.js";
+import Sender from "../sender.js";
 
 dotenv.config();
 
