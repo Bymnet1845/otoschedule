@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import { format } from "date-fns";
 import atprotoApi from "@atproto/api";
 import { heading, hyperlink, MessageFlags } from "discord.js";
+import outputLog from "./output-log";
 const { BskyAgent, RichText } = atprotoApi;
 
 dotenv.config();
@@ -53,8 +54,7 @@ export default class Sender {
 					return json.createdNote.id;
 				});
 			} catch (error) {
-				console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-				console.error(error);
+				outputLog(error, "error");
 			}
 		}
 	}
@@ -81,8 +81,6 @@ export default class Sender {
 			}
 		});
 
-		console.log(messageList);
-
 		try {
 			await BLUESKY_AGENT.login({
 				identifier: BLUESKY_IDENTIFIER,
@@ -94,8 +92,7 @@ export default class Sender {
 				if (i === 0) rootPost = parentPost;
 			}
 		} catch (error) {
-			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-			console.error(error);
+			outputLog(error, "error");
 		}
 
 		async function post(message, rootPost, parentPost) {
@@ -158,8 +155,7 @@ export default class Sender {
 		try {
 			messageList.forEach((message) => { client.channels.cache.get(channelId).send(message) });
 		} catch (error) {
-			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-			console.error(error);
+			outputLog(error, "error");
 		}
 	}
 
@@ -170,8 +166,7 @@ export default class Sender {
 			await interaction.reply({ content: messageList[0], flags: MessageFlags.Ephemeral });
 			for (let i = 1; i < messageList.length; i++) await interaction.followUp({ content: messageList[i], flags: MessageFlags.Ephemeral });
 		} catch (error) {
-			console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-			console.error(error);
+			outputLog(error, "error");
 		}
 	}
 }

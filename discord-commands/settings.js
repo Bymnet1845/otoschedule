@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import mysql from "mysql";
 import { SlashCommandBuilder, heading, unorderedList, userMention, roleMention } from "discord.js";
 import Sender from "../sender.js";
+import outputLog from "../output-log.js";
 
 dotenv.config();
 
@@ -50,12 +51,10 @@ export const SettingsCommand = {
 
 			MYSQL_CONNECTION.connect((error) => {
 				if (error) {
-					console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-					console.error(error);
+					outputLog(error, "error");
 					return;
 				} else {
-					console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-					console.log("データベースに接続しました。");
+					outputLog("データベースに接続しました。");
 				}
 			});
 
@@ -65,8 +64,7 @@ export const SettingsCommand = {
 						case "add-user":
 							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 								if (error) {
-									console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-									console.error(error);
+									outputLog(error, "error");
 									MYSQL_CONNECTION.end();
 									return;
 								} else {
@@ -83,8 +81,7 @@ export const SettingsCommand = {
 
 										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 											if (error) {
-												console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-												console.error(error);
+												outputLog(error, "error");
 												MYSQL_CONNECTION.end();
 												return;
 											} else {
@@ -103,8 +100,7 @@ export const SettingsCommand = {
 						case "add-role":
 							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 								if (error) {
-									console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-									console.error(error);
+									outputLog(error, "error");
 									MYSQL_CONNECTION.end();
 									return;
 								} else {
@@ -121,8 +117,7 @@ export const SettingsCommand = {
 
 										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 											if (error) {
-												console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-												console.error(error);
+												outputLog(error, "error");
 												MYSQL_CONNECTION.end();
 												return;
 											} else {
@@ -141,8 +136,7 @@ export const SettingsCommand = {
 						case "remove-user":
 							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 								if (error) {
-									console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-									console.error(error);
+									outputLog(error, "error");
 									MYSQL_CONNECTION.end();
 									return;
 								} else {
@@ -154,8 +148,7 @@ export const SettingsCommand = {
 
 										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 											if (error) {
-												console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-												console.error(error);
+												outputLog(error, "error");
 												MYSQL_CONNECTION.end();
 												return;
 											} else {
@@ -179,8 +172,7 @@ export const SettingsCommand = {
 						case "remove-role":
 							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 								if (error) {
-									console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-									console.error(error);
+									outputLog(error, "error");
 									MYSQL_CONNECTION.end();
 									return;
 								} else {
@@ -192,8 +184,7 @@ export const SettingsCommand = {
 
 										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 											if (error) {
-												console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-												console.error(error);
+												outputLog(error, "error");
 												MYSQL_CONNECTION.end();
 												return;
 											} else {
@@ -217,8 +208,7 @@ export const SettingsCommand = {
 						case "list":
 							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
 								if (error) {
-									console.log(format(Date.now(), "[yyyy-MM-dd HH:mm:ss]"));
-									console.error(error);
+									outputLog(error, "error");
 									MYSQL_CONNECTION.end();
 									return;
 								} else {
