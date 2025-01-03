@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import mysql from "mysql";
-import { SlashCommandBuilder, heading, unorderedList, userMention, roleMention } from "discord.js";
+import { SlashCommandBuilder, ChannelType, heading, unorderedList, userMention, roleMention } from "discord.js";
 import outputLog from "../output-log.js";
 import Sender from "../sender.js";
 
@@ -34,6 +34,17 @@ export const SettingsCommand = {
 							.addRoleOption(option => option.setName("role").setDescription("ロールを指定して下さい。").setRequired(true))
 					)
 					.addSubcommand(subcommand => subcommand.setName("list").setDescription("自動通知のメンション対象の一覧を表示します。"))
+			)
+			.addSubcommandGroup(subcommandGroup =>
+				subcommandGroup
+					.setName("channel").setDescription("自動通知するテキストチャンネルに関する設定をします。")
+					.addSubcommand(subcommand =>
+						subcommand
+							.setName("join").setDescription("自動通知するテキストチャンネルを登録します。")
+							.addChannelOption(option => option.setName("channel").setDescription("テキストチャンネルを指定して下さい。").addChannelTypes(ChannelType.GuildText).setRequired(true))
+					)
+					.addSubcommand(subcommand => subcommand.setName("leave").setDescription("自動通知するテキストチャンネルの登録を解除します。"))
+					.addSubcommand(subcommand => subcommand.setName("show").setDescription("自動通知するテキストチャンネルを表示します。"))
 			),
 	execute:
 		async function (interaction) {
@@ -242,6 +253,70 @@ export const SettingsCommand = {
 										MYSQL_CONNECTION.end();
 									} else {
 										const SENDER = new Sender({ plain: "自動通知のメンション対象は登録されていません。" }, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+										MYSQL_CONNECTION.end();
+									}
+								}
+							});
+
+							break;
+					}
+					
+					break;
+
+				case "channel":
+					switch (interaction.options.getSubcommand()) {
+						case "join":
+							const JOINING_CHANNEL_ID = interaction.options.getChannel("channel").id;
+
+							MYSQL_CONNECTION.query("UPDATE discord_servers SET channel_id=" + JOINING_CHANNEL_ID + " WHERE server_id=" + SERVER_ID + ";", (error) => {
+								if (error) {
+									outputLog(error, "error");
+									MYSQL_CONNECTION.end();
+									return;
+								} else {
+									const SENDER = new Sender({ plain: "自動通知するテキストチャンネルに <#" + JOINING_CHANNEL_ID + "> を登録しました。" }, []);
+									SENDER.setDiscordOption();
+									SENDER.replyToDiscord(interaction);
+									MYSQL_CONNECTION.end();
+								}
+							});
+
+							break;
+
+						case "leave":
+							MYSQL_CONNECTION.query("UPDATE discord_servers SET channel_id=NULL WHERE server_id=" + SERVER_ID + ";", (error, results) => {
+								if (error) {
+									outputLog(error, "error");
+									MYSQL_CONNECTION.end();
+									return;
+								} else {
+									const SENDER = new Sender({ plain: "自動通知するテキストチャンネルの登録を解除しました。" }, []);
+									SENDER.setDiscordOption();
+									SENDER.replyToDiscord(interaction);
+									MYSQL_CONNECTION.end();
+								}
+							});
+
+							break;
+
+						case "show":
+							MYSQL_CONNECTION.query("SELECT channel_id FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
+								if (error) {
+									outputLog(error, "error");
+									MYSQL_CONNECTION.end();
+									return;
+								} else {
+									const JOINED_CHANNEL_ID = results[0]["channel_id"];
+
+									if (JOINED_CHANNEL_ID) {	
+										const SENDER = new Sender({ plain: "自動通知するテキストチャンネルは <#" + JOINED_CHANNEL_ID + "> です。" }, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+										MYSQL_CONNECTION.end();
+									} else {
+										const SENDER = new Sender({ plain: "自動通知するテキストチャンネルは登録されていません。" }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 										MYSQL_CONNECTION.end();
