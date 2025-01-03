@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import mysql from "mysql";
 import { SlashCommandBuilder, ChannelType, heading, unorderedList, userMention, roleMention } from "discord.js";
 import outputLog from "../output-log.js";
+import queryDatabase from "../query-database.js";
 import Sender from "../sender.js";
 
 dotenv.config();
@@ -62,132 +63,114 @@ export const SettingsCommand = {
 				case "mentions":
 					switch (interaction.options.getSubcommand()) {
 						case "add":
-							MYSQL_CONNECTION.query(`SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (error, results) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									const MENTIONS_ADD_COMMAND_TARGET_ID = interaction.options.getMentionable("target").id;
-									let mentions = JSON.parse(results[0]["mentions"]).mentions, mention;
+							queryDatabase(MYSQL_CONNECTION, `SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+									const TARGET_ID = interaction.options.getMentionable("target").id;
+									let mentions = JSON.parse(results[0]["mentions"]);
 
 									if (interaction.options.getUser("target")) {
-										mention = "<@" + MENTIONS_ADD_COMMAND_TARGET_ID + ">";
-									} else if (interaction.options.getRole("target")) {
-										mention = "<@&" + MENTIONS_ADD_COMMAND_TARGET_ID + ">";
-									}
-										
-									if (mentions.includes(mention)) {
-										const SENDER = new Sender({ plain: `自動通知のメンション対象に ${mention} は既に登録されています。` }, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
-									} else {
-										mentions.push(mention);
+										if (mentions.users.includes(TARGET_ID)) {
+											const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は既に登録されています。` }, []);
+											SENDER.setDiscordOption();
+											SENDER.replyToDiscord(interaction);
+											MYSQL_CONNECTION.end();
+										} else {
+											mentions.users.push(TARGET_ID);
 
-										MYSQL_CONNECTION.query(`UPDATE discord_servers SET mentions='{ \"mentions\": ${JSON.stringify(mentions)} }' WHERE server_id=${SERVER_ID};`, (error) => {
-											if (error) {
-												outputLog(error, "error");
-												MYSQL_CONNECTION.end();
-												return;
-											} else {
-												const SENDER = new Sender({ plain: `自動通知のメンション対象に ${mention} を追加しました。` }, []);
+											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
+												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
-												MYSQL_CONNECTION.end();
-											}
-										});
+											}, true, true);
+										}
+									} else if (interaction.options.getRole("target")) {
+										if (mentions.roles.includes(TARGET_ID)) {
+											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は既に登録されています。` }, []);
+											SENDER.setDiscordOption();
+											SENDER.replyToDiscord(interaction);
+											MYSQL_CONNECTION.end();
+										} else {
+											mentions.roles.push(TARGET_ID);
+
+											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
+												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> を追加しました。` }, []);
+												SENDER.setDiscordOption();
+												SENDER.replyToDiscord(interaction);
+											}, true, true);
+										}
 									}
-								}
-							});
+							}, false, true);
 
 							break;
+
 						case "remove":
-							MYSQL_CONNECTION.query(`SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (error, results) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									const MENTIONS_REMOVE_COMMAND_TARGET_ID = interaction.options.getMentionable("target").id;
-									let mentions = JSON.parse(results[0]["mentions"]).mentions, mention;
+							queryDatabase(MYSQL_CONNECTION, `SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+									const TARGET_ID = interaction.options.getMentionable("target").id;
+									let mentions = JSON.parse(results[0]["mentions"]);
 
 									if (interaction.options.getUser("target")) {
-										mention = "<@" + MENTIONS_REMOVE_COMMAND_TARGET_ID + ">";
-									} else if (interaction.options.getRole("target")) {
-										mention = "<@&" + MENTIONS_REMOVE_COMMAND_TARGET_ID + ">";
-									}
-										
-									if (mentions.includes(mention)) {
-										mentions.splice(mentions.findIndex((mention) => { mention === MENTIONS_REMOVE_COMMAND_TARGET_ID }), 1);
+										if (mentions.users.includes(TARGET_ID)) {
+											mentions.users.splice(mentions.users.findIndex((userId) => { userId === TARGET_ID }), 1);
 
-										MYSQL_CONNECTION.query(`UPDATE discord_servers SET mentions='{ \"mentions\": ${JSON.stringify(mentions)} }' WHERE server_id=${SERVER_ID};`, (error) => {
-											if (error) {
-												outputLog(error, "error");
-												MYSQL_CONNECTION.end();
-												return;
-											} else {
-												const SENDER = new Sender({ plain: `自動通知のメンション対象から ${mention} を削除しました。` }, []);
+											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
+												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーから <@${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
-												MYSQL_CONNECTION.end();
-											}
-										});
-									} else {
-										const SENDER = new Sender({ plain: `自動通知のメンション対象に ${mention} は登録されていません。` }, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
+											}, true, true);
+										} else {
+											const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は登録されていません。` }, []);
+											SENDER.setDiscordOption();
+											SENDER.replyToDiscord(interaction);
+											MYSQL_CONNECTION.end();
+										}
+									} else if (interaction.options.getRole("target")) {
+										if (mentions.roles.includes(TARGET_ID)) {
+											mentions.roles.splice(mentions.roles.findIndex((roleId) => { roleId === TARGET_ID }), 1);
+
+											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
+												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールから <@&${TARGET_ID}> を削除しました。` }, []);
+												SENDER.setDiscordOption();
+												SENDER.replyToDiscord(interaction);
+											}, true, true);
+										} else {
+											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は登録されていません。` }, []);
+											SENDER.setDiscordOption();
+											SENDER.replyToDiscord(interaction);
+											MYSQL_CONNECTION.end();
+										}
 									}
-								}
-							});
+							}, false, true);
 
 							break;
 
 						case "list":
-							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									let data = JSON.parse(results[0]["mentions"]);
+							queryDatabase(MYSQL_CONNECTION, `SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+									let mentions = JSON.parse(results[0]["mentions"]);
+									let preface = { plain: "" };
 
-									if (data) {
-										let preface = { plain: "" };
+									if (mentions.users.length === 0 && mentions.roles.length === 0) {
+										preface.plain = "自動通知のメンション対象は登録されていません。";
+									} else {
+										preface.plain += "自動通知のメンション対象は次の通りです。";
 
-										if (data.users.length === 0 && data.roles.length === 0) {
-											preface.plain = "自動通知のメンション対象は登録されていません。";
-										} else {
-											preface.plain += "自動通知のメンション対象は次の通りです。";
-
-											if (data.users.length > 0) {
-												preface.plain += "\n" + heading("ユーザー", 2) + "\n";
-												let userMentions = new Array();
-												data.users.forEach((user) => { userMentions.push(userMention(user)) });
-												preface.plain += unorderedList(userMentions);
-											}
-
-											if (data.roles.length > 0) {
-												preface.plain += "\n" + heading("ロール", 2) + "\n";
-												let roleMentions = new Array();
-												data.roles.forEach((role) => { roleMentions.push(roleMention(role)) });
-												preface.plain += unorderedList(roleMentions);
-											}
+										if (mentions.users.length > 0) {
+											preface.plain += "\n" + heading("ユーザー", 2) + "\n";
+											let userMentions = new Array();
+											mentions.users.forEach((user) => { userMentions.push(userMention(user)) });
+											preface.plain += unorderedList(userMentions);
 										}
 
-										const SENDER = new Sender(preface, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
-									} else {
-										const SENDER = new Sender({ plain: "自動通知のメンション対象は登録されていません。" }, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
+										if (mentions.roles.length > 0) {
+											preface.plain += "\n" + heading("ロール", 2) + "\n";
+											let roleMentions = new Array();
+											mentions.roles.forEach((role) => { roleMentions.push(roleMention(role)) });
+											preface.plain += unorderedList(roleMentions);
+										}
 									}
-								}
-							});
+
+									const SENDER = new Sender(preface, []);
+									SENDER.setDiscordOption();
+									SENDER.replyToDiscord(interaction);
+							}, true, true);
 
 							break;
 					}
@@ -199,59 +182,38 @@ export const SettingsCommand = {
 						case "join":
 							const JOINING_CHANNEL_ID = interaction.options.getChannel("channel").id;
 
-							MYSQL_CONNECTION.query("UPDATE discord_servers SET channel_id=" + JOINING_CHANNEL_ID + " WHERE server_id=" + SERVER_ID + ";", (error) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									const SENDER = new Sender({ plain: "自動通知するテキストチャンネルに <#" + JOINING_CHANNEL_ID + "> を登録しました。" }, []);
-									SENDER.setDiscordOption();
-									SENDER.replyToDiscord(interaction);
-									MYSQL_CONNECTION.end();
-								}
-							});
+							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET channel_id=${JOINING_CHANNEL_ID} WHERE server_id=${SERVER_ID};`, () => {
+								const SENDER = new Sender({ plain: "自動通知するテキストチャンネルに <#" + JOINING_CHANNEL_ID + "> を登録しました。" }, []);
+								SENDER.setDiscordOption();
+								SENDER.replyToDiscord(interaction);
+							}, true, true);
 
 							break;
 
 						case "leave":
-							MYSQL_CONNECTION.query("UPDATE discord_servers SET channel_id=NULL WHERE server_id=" + SERVER_ID + ";", (error) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									const SENDER = new Sender({ plain: "自動通知するテキストチャンネルの登録を解除しました。" }, []);
-									SENDER.setDiscordOption();
-									SENDER.replyToDiscord(interaction);
-									MYSQL_CONNECTION.end();
-								}
-							});
+							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET channel_id=NULL WHERE server_id=${SERVER_ID};`, () => {
+								const SENDER = new Sender({ plain: "自動通知するテキストチャンネルの登録を解除しました。" }, []);
+								SENDER.setDiscordOption();
+								SENDER.replyToDiscord(interaction);
+							}, true, true);
 
 							break;
 
 						case "show":
-							MYSQL_CONNECTION.query("SELECT channel_id FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									const JOINED_CHANNEL_ID = results[0]["channel_id"];
+							queryDatabase(MYSQL_CONNECTION, `SELECT channel_id FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+								const JOINED_CHANNEL_ID = results[0]["channel_id"];
+								let preface = { plain: "" };
 
-									if (JOINED_CHANNEL_ID) {	
-										const SENDER = new Sender({ plain: "自動通知するテキストチャンネルは <#" + JOINED_CHANNEL_ID + "> です。" }, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
-									} else {
-										const SENDER = new Sender({ plain: "自動通知するテキストチャンネルは登録されていません。" }, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
-									}
+								if (JOINED_CHANNEL_ID) {
+									preface.plain = `自動通知するテキストチャンネルは <#${JOINED_CHANNEL_ID}> です。`;
+								} else {
+									preface.plain = "自動通知するテキストチャンネルは登録されていません。";
 								}
-							});
+
+								const SENDER = new Sender(preface, []);
+								SENDER.setDiscordOption();
+								SENDER.replyToDiscord(interaction);
+							}, true, true);
 
 							break;
 					}
