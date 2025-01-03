@@ -15,23 +15,13 @@ export const SettingsCommand = {
 					.setName("mentions").setDescription("自動通知のメンションに関する設定をします。")
 					.addSubcommand(subcommand =>
 						subcommand
-							.setName("add-user").setDescription("自動通知のメンション対象ユーザーを追加します。")
-							.addUserOption(option => option.setName("user").setDescription("ユーザーを指定して下さい。").setRequired(true))
+							.setName("add").setDescription("自動通知のメンション対象を追加します。")
+							.addMentionableOption(option => option.setName("target").setDescription("ユーザー／ロールを指定して下さい。").setRequired(true))
 					)
 					.addSubcommand(subcommand =>
 						subcommand
-							.setName("add-role").setDescription("自動通知のメンション対象ロールを追加します。")
-							.addRoleOption(option => option.setName("role").setDescription("ロールを指定して下さい。").setRequired(true))
-					)
-					.addSubcommand(subcommand =>
-						subcommand
-							.setName("remove-user").setDescription("自動通知のメンション対象ユーザーを削除します。")
-							.addUserOption(option => option.setName("user").setDescription("ユーザーを指定して下さい。").setRequired(true))
-					)
-					.addSubcommand(subcommand =>
-						subcommand
-							.setName("remove-role").setDescription("自動通知のメンション対象ロールを削除します。")
-							.addRoleOption(option => option.setName("role").setDescription("ロールを指定して下さい。").setRequired(true))
+							.setName("remove").setDescription("自動通知のメンション対象を削除します。")
+							.addMentionableOption(option => option.setName("target").setDescription("ユーザー／ロールを指定して下さい。").setRequired(true))
 					)
 					.addSubcommand(subcommand => subcommand.setName("list").setDescription("自動通知のメンション対象の一覧を表示します。"))
 			)
@@ -71,31 +61,37 @@ export const SettingsCommand = {
 			switch (interaction.options.getSubcommandGroup()) {
 				case "mentions":
 					switch (interaction.options.getSubcommand()) {
-						case "add-user":
-							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
+						case "add":
+							MYSQL_CONNECTION.query(`SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (error, results) => {
 								if (error) {
 									outputLog(error, "error");
 									MYSQL_CONNECTION.end();
 									return;
 								} else {
-									const ADDING_USER_ID = interaction.options.getUser("user").id;
-									let data = JSON.parse(results[0]["mentions"]);
+									const MENTIONS_ADD_COMMAND_TARGET_ID = interaction.options.getMentionable("target").id;
+									let mentions = JSON.parse(results[0]["mentions"]).mentions, mention;
 
-									if (data.users.includes(ADDING_USER_ID)) {
-										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + ADDING_USER_ID + "> は既に登録されています。" }, []);
+									if (interaction.options.getUser("target")) {
+										mention = "<@" + MENTIONS_ADD_COMMAND_TARGET_ID + ">";
+									} else if (interaction.options.getRole("target")) {
+										mention = "<@&" + MENTIONS_ADD_COMMAND_TARGET_ID + ">";
+									}
+										
+									if (mentions.includes(mention)) {
+										const SENDER = new Sender({ plain: `自動通知のメンション対象に ${mention} は既に登録されています。` }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 										MYSQL_CONNECTION.end();
 									} else {
-										data.users.push(ADDING_USER_ID);
+										mentions.push(mention);
 
-										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error) => {
+										MYSQL_CONNECTION.query(`UPDATE discord_servers SET mentions='{ \"mentions\": ${JSON.stringify(mentions)} }' WHERE server_id=${SERVER_ID};`, (error) => {
 											if (error) {
 												outputLog(error, "error");
 												MYSQL_CONNECTION.end();
 												return;
 											} else {
-												const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + ADDING_USER_ID + "> を追加しました。" }, []);
+												const SENDER = new Sender({ plain: `自動通知のメンション対象に ${mention} を追加しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
 												MYSQL_CONNECTION.end();
@@ -106,106 +102,39 @@ export const SettingsCommand = {
 							});
 
 							break;
-
-						case "add-role":
-							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error) => {
+						case "remove":
+							MYSQL_CONNECTION.query(`SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (error, results) => {
 								if (error) {
 									outputLog(error, "error");
 									MYSQL_CONNECTION.end();
 									return;
 								} else {
-									const ADDING_ROLE_ID = interaction.options.getRole("role").id;
-									let data = JSON.parse(results[0]["mentions"]);
+									const MENTIONS_REMOVE_COMMAND_TARGET_ID = interaction.options.getMentionable("target").id;
+									let mentions = JSON.parse(results[0]["mentions"]).mentions, mention;
 
-									if (data.roles.includes(ADDING_ROLE_ID)) {
-										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@&" + ADDING_ROLE_ID + "> は既に登録されています。" }, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
-									} else {
-										data.roles.push(ADDING_ROLE_ID);
-
-										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error) => {
-											if (error) {
-												outputLog(error, "error");
-												MYSQL_CONNECTION.end();
-												return;
-											} else {
-												const SENDER = new Sender({ plain: "自動通知のメンション対象に <@&" + ADDING_ROLE_ID + "> を追加しました。" }, []);
-												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction);
-												MYSQL_CONNECTION.end();
-											}
-										});
+									if (interaction.options.getUser("target")) {
+										mention = "<@" + MENTIONS_REMOVE_COMMAND_TARGET_ID + ">";
+									} else if (interaction.options.getRole("target")) {
+										mention = "<@&" + MENTIONS_REMOVE_COMMAND_TARGET_ID + ">";
 									}
-								}
-							});
+										
+									if (mentions.includes(mention)) {
+										mentions.splice(mentions.findIndex((mention) => { mention === MENTIONS_REMOVE_COMMAND_TARGET_ID }), 1);
 
-							break;
-
-						case "remove-user":
-							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									const REMOVING_USER_ID = interaction.options.getUser("user").id;
-									let data = JSON.parse(results[0]["mentions"]);
-
-									if (data.users.includes(REMOVING_USER_ID)) {
-										data.users.splice(data.users.findIndex((user) => { user === REMOVING_USER_ID }), 1);
-
-										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error) => {
+										MYSQL_CONNECTION.query(`UPDATE discord_servers SET mentions='{ \"mentions\": ${JSON.stringify(mentions)} }' WHERE server_id=${SERVER_ID};`, (error) => {
 											if (error) {
 												outputLog(error, "error");
 												MYSQL_CONNECTION.end();
 												return;
 											} else {
-												const SENDER = new Sender({ plain: "自動通知のメンション対象から <@" + REMOVING_USER_ID + "> を削除しました。" }, []);
+												const SENDER = new Sender({ plain: `自動通知のメンション対象から ${mention} を削除しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
 												MYSQL_CONNECTION.end();
 											}
 										});
 									} else {
-										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + REMOVING_USER_ID + "> は登録されていません。" }, []);
-										SENDER.setDiscordOption();
-										SENDER.replyToDiscord(interaction);
-										MYSQL_CONNECTION.end();
-									}
-								}
-							});
-
-							break;
-
-						case "remove-role":
-							MYSQL_CONNECTION.query("SELECT mentions FROM discord_servers WHERE server_id=" + SERVER_ID + ";", (error, results) => {
-								if (error) {
-									outputLog(error, "error");
-									MYSQL_CONNECTION.end();
-									return;
-								} else {
-									const REMOVING_ROLE_ID = interaction.options.getRole("role").id;
-									let data = JSON.parse(results[0]["mentions"]);
-
-									if (data.roles.includes(REMOVING_ROLE_ID)) {
-										data.roles.splice(data.roles.findIndex((role) => { role === REMOVING_ROLE_ID }), 1);
-
-										MYSQL_CONNECTION.query("UPDATE discord_servers SET mentions='" + JSON.stringify(data) + "' WHERE server_id=" + SERVER_ID + ";", (error) => {
-											if (error) {
-												outputLog(error, "error");
-												MYSQL_CONNECTION.end();
-												return;
-											} else {
-												const SENDER = new Sender({ plain: "自動通知のメンション対象から <@&" + REMOVING_ROLE_ID + "> を削除しました。" }, []);
-												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction);
-												MYSQL_CONNECTION.end();
-											}
-										});
-									} else {
-										const SENDER = new Sender({ plain: "自動通知のメンション対象に <@" + REMOVING_USER_ID + "> は登録されていません。" }, []);
+										const SENDER = new Sender({ plain: `自動通知のメンション対象に ${mention} は登録されていません。` }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 										MYSQL_CONNECTION.end();
