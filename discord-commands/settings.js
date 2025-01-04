@@ -113,7 +113,7 @@ export const SettingsCommand = {
 										if (mentions.users.includes(TARGET_ID)) {
 											const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は既に登録されています。` }, []);
 											SENDER.setDiscordOption();
-											SENDER.replyToDiscord(interaction);
+											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
 										} else {
 											mentions.users.push(TARGET_ID);
@@ -121,14 +121,14 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction);
+												SENDER.replyToDiscord(interaction, true);
 											}, true, true);
 										}
 									} else if (interaction.options.getRole("target")) {
 										if (mentions.roles.includes(TARGET_ID)) {
 											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は既に登録されています。` }, []);
 											SENDER.setDiscordOption();
-											SENDER.replyToDiscord(interaction);
+											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
 										} else {
 											mentions.roles.push(TARGET_ID);
@@ -136,7 +136,7 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction);
+												SENDER.replyToDiscord(interaction, true);
 											}, true, true);
 										}
 									}
@@ -156,12 +156,12 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーから <@${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction);
+												SENDER.replyToDiscord(interaction, true);
 											}, true, true);
 										} else {
 											const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は登録されていません。` }, []);
 											SENDER.setDiscordOption();
-											SENDER.replyToDiscord(interaction);
+											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
 										}
 									} else if (interaction.options.getRole("target")) {
@@ -171,12 +171,12 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールから <@&${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction);
+												SENDER.replyToDiscord(interaction, true);
 											}, true, true);
 										} else {
 											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は登録されていません。` }, []);
 											SENDER.setDiscordOption();
-											SENDER.replyToDiscord(interaction);
+											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
 										}
 									}
@@ -211,7 +211,7 @@ export const SettingsCommand = {
 
 									const SENDER = new Sender(preface, []);
 									SENDER.setDiscordOption();
-									SENDER.replyToDiscord(interaction);
+									SENDER.replyToDiscord(interaction, true);
 							}, true, true);
 
 							break;

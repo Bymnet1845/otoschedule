@@ -158,12 +158,19 @@ export default class Sender {
 		}
 	}
 
-	async replyToDiscord(interaction) {
+	async replyToDiscord(interaction, ephemeralEnabled = false) {
 		let messageList = this.discordMessageList;
 
 		try {
-			await interaction.reply({ content: messageList[0], flags: MessageFlags.Ephemeral });
-			for (let i = 1; i < messageList.length; i++) await interaction.followUp({ content: messageList[i], flags: MessageFlags.Ephemeral });
+			let firstMessage = { content: messageList[0] };
+			if (ephemeralEnabled) firstMessage.flags = MessageFlags.Ephemeral;
+			await interaction.reply(firstMessage);
+
+			for (let i = 1; i < messageList.length; i++) {
+				let message = { content: messageList[i] };
+				if (ephemeralEnabled) message.flags = MessageFlags.Ephemeral;
+				await interaction.followUp(message);
+			}
 		} catch (error) {
 			outputLog(error, "error");
 		}
