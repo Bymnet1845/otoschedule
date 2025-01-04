@@ -7,6 +7,15 @@ import Sender from "../sender.js";
 
 dotenv.config();
 
+const REPORT_TYPES = ["today", "tonight", "soon", "update"];
+
+const REPORT_TYPE_NAMES = {
+	today: "「今日予定の音MAD周辺配信」の正子定時通知（0時）",
+	tonight: "「今夜予定の音MAD周辺配信」の夕方定時通知（18時）",
+	soon: "「間も無く開始予定の音MAD周辺配信」の通知（10分間隔）",
+	update: "音MAD周辺配信表の更新情報の通知（20分間隔）"
+};
+
 export const SettingsCommand = {
 	data:
 		new SlashCommandBuilder()
@@ -25,6 +34,39 @@ export const SettingsCommand = {
 							.addMentionableOption(option => option.setName("target").setDescription("ユーザー／ロールを指定して下さい。").setRequired(true))
 					)
 					.addSubcommand(subcommand => subcommand.setName("list").setDescription("自動通知のメンション対象の一覧を表示します。"))
+			)
+			.addSubcommandGroup(subcommandGroup =>
+				subcommandGroup
+					.setName("report-types").setDescription("各種自動通知の有効／無効に関する設定をします。")
+					.addSubcommand(subcommand =>
+						subcommand
+							.setName("enable").setDescription("特定の自動通知を有効にします。")
+							.addStringOption(option => 
+								option
+									.setName("target").setDescription("自動通知の種類を指定して下さい。").setRequired(true)
+									.addChoices(
+										{ name: "「今日予定の音MAD周辺配信」の正子定時通知（0時）", value: "today" },
+										{ name: "「今夜予定の音MAD周辺配信」の夕方定時通知（18時）", value: "tonight" },
+										{ name: "「間も無く開始予定の音MAD周辺配信」の通知（随時）", value: "soon" },
+										{ name: "音MAD周辺配信表の更新情報の通知（随時）", value: "update" }
+									)
+							)
+					)
+					.addSubcommand(subcommand =>
+						subcommand
+							.setName("disable").setDescription("特定の自動通知を無効にします。")
+							.addStringOption(option => 
+								option
+									.setName("target").setDescription("自動通知の種類を指定して下さい。").setRequired(true)
+									.addChoices(
+										{ name: "「今日予定の音MAD周辺配信」の正子定時通知（0時）", value: "today" },
+										{ name: "「今夜予定の音MAD周辺配信」の夕方定時通知（18時）", value: "tonight" },
+										{ name: "「間も無く開始予定の音MAD周辺配信」の通知（随時）", value: "soon" },
+										{ name: "音MAD周辺配信表の更新情報の通知（随時）", value: "update" }
+									)
+							)
+					)
+					.addSubcommand(subcommand => subcommand.setName("list").setDescription("各種自動通知の有効／無効の状態を表示します。"))
 			)
 			.addSubcommandGroup(subcommandGroup =>
 				subcommandGroup
@@ -170,6 +212,68 @@ export const SettingsCommand = {
 									const SENDER = new Sender(preface, []);
 									SENDER.setDiscordOption();
 									SENDER.replyToDiscord(interaction);
+							}, true, true);
+
+							break;
+					}
+					
+					break;
+
+				case "report-types":
+					switch (interaction.options.getSubcommand()) {
+						case "enable":
+							queryDatabase(MYSQL_CONNECTION, `SELECT report_types FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+								const TARGET_TYPE = interaction.options.getString("target");
+								let disabledReportTypes = JSON.parse(results[0]["report_types"]).disabled;
+
+								if (disabledReportTypes.includes(TARGET_TYPE)) {
+									disabledReportTypes.splice(disabledReportTypes.findIndex((type) => { type === TARGET_TYPE }), 1);
+
+									queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET report_types='{ "disabled": ${JSON.stringify(disabledReportTypes)} }' WHERE server_id=${SERVER_ID};`, () => {
+										const SENDER = new Sender({ plain: `「${REPORT_TYPE_NAMES[TARGET_TYPE]}」の自動通知を有効にしました。` }, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+									}, true, true);
+								} else {
+									const SENDER = new Sender({ plain: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知は既に有効です。` }, []);
+									SENDER.setDiscordOption();
+									SENDER.replyToDiscord(interaction);
+									MYSQL_CONNECTION.end();
+								}
+							}, false, true);
+
+							break;
+
+						case "disable":
+							queryDatabase(MYSQL_CONNECTION, `SELECT report_types FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+								const TARGET_TYPE = interaction.options.getString("target");
+								let disabledReportTypes = JSON.parse(results[0]["report_types"]).disabled;
+
+								if (disabledReportTypes.includes(TARGET_TYPE)) {
+									const SENDER = new Sender({ plain: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知は既に無効です。` }, []);
+									SENDER.setDiscordOption();
+									SENDER.replyToDiscord(interaction);
+									MYSQL_CONNECTION.end();
+								} else {
+									disabledReportTypes.push(TARGET_TYPE);
+
+									queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET report_types='{ "disabled": ${JSON.stringify(disabledReportTypes)} }' WHERE server_id=${SERVER_ID};`, () => {
+										const SENDER = new Sender({ plain: `「${REPORT_TYPE_NAMES[TARGET_TYPE]}」の自動通知を無効にしました。` }, []);
+										SENDER.setDiscordOption();
+										SENDER.replyToDiscord(interaction);
+									}, true, true);
+								}
+							}, false, true);
+
+							break;
+
+						case "list":
+							queryDatabase(MYSQL_CONNECTION, `SELECT report_types FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+								let disabledReportTypes = JSON.parse(results[0]["report_types"]).disabled, reportTypesStatusText = new Array();
+								REPORT_TYPES.forEach((type) => { reportTypesStatusText.push(`${REPORT_TYPE_NAMES[type]}：${disabledReportTypes.includes(type) ? "無効" : "有効"}`); });
+								const SENDER = new Sender({ plain: `各種自動通知の有効／無効の状態は次の通りです。\n${unorderedList(reportTypesStatusText)}` }, []);
+								SENDER.setDiscordOption();
+								SENDER.replyToDiscord(interaction);
 							}, true, true);
 
 							break;
