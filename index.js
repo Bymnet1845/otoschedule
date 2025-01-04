@@ -79,15 +79,15 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 			await SettingsCommand.execute(interaction);
 		} catch (error) {
 			outputLog(error, "error");
-
-			if (interaction.replied || interaction.deferred) {
-				await interaction.followUp({ content: "コマンド実行時にエラーが発生しました。", flags: MessageFlags.Ephemeral });
-			} else {
-				await interaction.reply({ content: "コマンド実行時にエラーが発生しました。", flags: MessageFlags.Ephemeral });
-			}
+			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
+			SENDER.setDiscordOption();
+			SENDER.replyToDiscord(interaction, true);
 		}
 	} else {
 		outputLog(`${interaction.commandName}というコマンドは存在しません。`, "error");
+		const SENDER = Sender({ plain: `${interaction.commandName}というコマンドは存在しません。` });
+		SENDER.setDiscordOption();
+		SENDER.replyToDiscord(interaction, true);
 	}
 });
 
