@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import cron from "node-cron";
 import mysql from "mysql";
 import japaneseHolidays from "japanese-holidays";
-import { Client, Events, GatewayIntentBits, heading, unorderedList, inlineCode } from "discord.js";
+import { Client, Events, GatewayIntentBits, ActivityType, heading, unorderedList, inlineCode } from "discord.js";
 import outputLog from "./output-log.js";
 import queryDatabase from "./query-database.js";
 import getScheduleList from "./get-schedule-list.js";
@@ -38,11 +38,13 @@ MYSQL_CONNECTION.connect((error) => {
 
 DISCORD_CLIENT.on("ready", (event) => {
 	outputLog(`${event.user.tag}としてDiscordにログインします。`);
+	setDiscordAvtivity();
 
-	cron.schedule("0 0 0 * * *", () => { postPeriodicReports(0, 100800000, "今日", "today") });
+	cron.schedule("0 0 0 * * *", () => {postPeriodicReports(0, 100800000, "今日", "today") });
 	cron.schedule("0 0 18 * * *", () => { postPeriodicReports(18, 43200000, "今夜", "tonight") });
 
 	cron.schedule("0 5,15,25,35,45,55 * * * *", async function () {
+		setDiscordAvtivity();
 		const NOW = new Date();
 		const NOW_UNIX_TIME = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate(), NOW.getHours(), NOW.getMinutes(), 0).getTime();
 		
@@ -137,4 +139,8 @@ function postReports(preface, scheduleList, type) {
 			}
 		}
 	}, false, false);
+}
+
+function setDiscordAvtivity() {
+	DISCORD_CLIENT.user.setActivity({ name: `稼働中（参加サーバー数：${DISCORD_CLIENT.guilds.cache.size}）`, type: ActivityType.Custom });
 }
