@@ -39,8 +39,6 @@ MYSQL_CONNECTION.connect((error) => {
 DISCORD_CLIENT.on("ready", (event) => {
 	outputLog(`${event.user.tag}としてDiscordにログインします。`);
 
-	postPeriodicReports(0, 201600000, "今日", "today");
-
 	cron.schedule("0 0 0 * * *", () => { postPeriodicReports(0, 100800000, "今日", "today") });
 	cron.schedule("0 0 18 * * *", () => { postPeriodicReports(18, 43200000, "今夜", "tonight") });
 
