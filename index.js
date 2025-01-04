@@ -126,7 +126,7 @@ async function postPeriodicReports(nowHours, periodTime, prefacePeriodText, type
 
 function postReports(preface, scheduleList, type) {
 	const SENDER = new Sender(preface, scheduleList);
-	// SENDER.sendToMisskey();
+	SENDER.sendToMisskey();
 	// SENDER.sendToBluesky();
 
 	queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
