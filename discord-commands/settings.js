@@ -121,7 +121,7 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction, true);
+												SENDER.replyToDiscord(interaction);
 											}, true, true);
 										}
 									} else if (interaction.options.getRole("target")) {
@@ -136,7 +136,7 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction, true);
+												SENDER.replyToDiscord(interaction);
 											}, true, true);
 										}
 									}
@@ -156,7 +156,7 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーから <@${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction, true);
+												SENDER.replyToDiscord(interaction);
 											}, true, true);
 										} else {
 											const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は登録されていません。` }, []);
@@ -171,7 +171,7 @@ export const SettingsCommand = {
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
 												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールから <@&${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
-												SENDER.replyToDiscord(interaction, true);
+												SENDER.replyToDiscord(interaction);
 											}, true, true);
 										} else {
 											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は登録されていません。` }, []);
