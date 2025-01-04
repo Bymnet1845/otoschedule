@@ -162,14 +162,15 @@ export default class Sender {
 		let messageList = this.discordMessageList;
 
 		try {
-			let firstMessage = { content: messageList[0] };
-			if (ephemeralEnabled) firstMessage.flags = MessageFlags.Ephemeral;
-			await interaction.reply(firstMessage);
-
-			for (let i = 1; i < messageList.length; i++) {
+			for (let i = 0; i < messageList.length; i++) {
 				let message = { content: messageList[i] };
 				if (ephemeralEnabled) message.flags = MessageFlags.Ephemeral;
-				await interaction.followUp(message);
+
+				if (interaction.replied || interaction.deferred) {
+					await interaction.followUp(message);
+				} else {
+					await interaction.reply(message);
+				}
 			}
 		} catch (error) {
 			outputLog(error, "error");
