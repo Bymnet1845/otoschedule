@@ -142,5 +142,9 @@ function postReports(preface, scheduleList, type) {
 }
 
 function setDiscordAvtivity() {
-	DISCORD_CLIENT.user.setActivity({ name: `稼働中（参加サーバー数：${DISCORD_CLIENT.guilds.cache.size}）`, type: ActivityType.Custom });
+	try {
+		DISCORD_CLIENT.user.setActivity({ name: `稼働中（参加サーバー数：${DISCORD_CLIENT.guilds.cache.size}）`, type: ActivityType.Custom });
+	} catch (error) {
+		outputLog(error, "error");
+	}
 }
