@@ -55,7 +55,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 		});
 	}, false, false);
 
-	cron.schedule("0 0 0 * * *", () => {postPeriodicReports(0, 100800000, "今日", "today") });
+	cron.schedule("0 0 0 * * *", () => { postPeriodicReports(0, 100800000, "今日", "today") });
 	cron.schedule("0 0 18 * * *", () => { postPeriodicReports(18, 43200000, "今夜", "tonight") });
 
 	cron.schedule("0 5,15,25,35,45,55 * * * *", async function () {
