@@ -179,7 +179,7 @@ function setDiscordAvtivity() {
 function createDiscordServer(serverId, serverSystemChannelId) {
 	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [] }', '{ \"disabled\": [] }');`, () => {
 		outputLog(`サーバー（ID：${serverId}）に参加しました。`);
-		const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さり有難う御座います！\n" + heading("初期設定", 2) + "\n本botでは、サーバー毎にユーザーが指定したテキストチャンネルに「自動通知」をします。\nまずは、設定コマンド（" + inlineCode("/settings channel join") + "）でテキストチャンネルを登録して下さい。\n" + heading("機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、間も無く予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", "自動通知は種類毎で無効に出来ます（" + inlineCode("/settings report-types disable") + "）。", "自動通知でユーザー／ロールへのメンションをさせる事が出来ます（" + inlineCode("/settings mentions add") + "）。"]) }, []);		 
+		const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さり有難う御座います！\n" + heading("初期設定", 2) + "\n本botでは、サーバー毎にユーザーが指定したテキストチャンネルに「自動通知」をします。\nまずは、設定コマンド（" + inlineCode("/settings channel join") + "）でテキストチャンネルを登録して下さい。\n" + heading("機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、間も無く開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", "自動通知は種類毎で無効に出来ます（" + inlineCode("/settings report-types disable") + "）。", "自動通知でユーザー／ロールへのメンションをさせる事が出来ます（" + inlineCode("/settings mentions add") + "）。"]) }, []);		 
 		SENDER.setDiscordOption();
 		SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
 	}, false, false);
