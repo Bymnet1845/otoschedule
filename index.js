@@ -11,6 +11,7 @@ import getHistoryList from "./get-history-list.js";
 import Sender from "./sender.js";
 import { SettingsCommand } from "./discord-commands/settings.js";
 import { AboutCommand } from "./discord-commands/about.js";
+import { SpreadsheetsCommand } from "./discord-commands/spreadsheets.js";
 
 dotenv.config();
 
@@ -101,6 +102,15 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 	} else if (interaction.commandName === AboutCommand.data.name) {
 		try {
 			await AboutCommand.execute(interaction);
+		} catch (error) {
+			outputLog(error, "error");
+			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
+			SENDER.setDiscordOption();
+			SENDER.replyToDiscord(interaction, true);
+		}
+	} else if (interaction.commandName === SpreadsheetsCommand.data.name) {
+		try {
+			await SpreadsheetsCommand.execute(interaction);
 		} catch (error) {
 			outputLog(error, "error");
 			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
