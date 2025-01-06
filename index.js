@@ -10,6 +10,7 @@ import getScheduleList from "./get-schedule-list.js";
 import getHistoryList from "./get-history-list.js";
 import Sender from "./sender.js";
 import { SettingsCommand } from "./discord-commands/settings.js";
+import { AboutCommand } from "./discord-commands/about.js";
 
 dotenv.config();
 
@@ -91,6 +92,15 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 	if (interaction.commandName === SettingsCommand.data.name) {
 		try {
 			await SettingsCommand.execute(interaction);
+		} catch (error) {
+			outputLog(error, "error");
+			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
+			SENDER.setDiscordOption();
+			SENDER.replyToDiscord(interaction, true);
+		}
+	} else if (interaction.commandName === AboutCommand.data.name) {
+		try {
+			await AboutCommand.execute(interaction);
 		} catch (error) {
 			outputLog(error, "error");
 			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
