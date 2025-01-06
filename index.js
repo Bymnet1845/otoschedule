@@ -46,23 +46,11 @@ DISCORD_CLIENT.on("ready", (event) => {
 		results.forEach((result) => {
 			let serverId = result["server_id"];
 			registeredDiscordServerIds.push(serverId);
-
-			if (!JOINING_DISCORD_SERVER_IDS.includes(serverId)) {
-				queryDatabase(MYSQL_CONNECTION, `DELETE FROM discord_servers WHERE server_id=${serverId};`, () => {
-					outputLog(`サーバー（ID：${serverId}）から退出しました。`);
-				}, false, false);
-			}
+			if (!JOINING_DISCORD_SERVER_IDS.includes(serverId)) deleteDiscordServer(serverId); 
 		});
 
 		JOINING_DISCORD_SERVER_IDS.forEach((serverId) => {
-			if (!registeredDiscordServerIds.includes(serverId)) {
-				queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [] }', '{ \"disabled\": [] }');`, () => {
-					outputLog(`サーバー（ID：${serverId}）に参加しました。`);
-					const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さり有難う御座います！\n" + heading("初期設定", 2) + "\n本botでは、サーバー毎にユーザーが指定したテキストチャンネルに「自動通知」をします。\nまずは、設定コマンド（" + inlineCode("/settings channel join") + "）でテキストチャンネルを登録して下さい。\n" + heading("機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、間も無く予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", "自動通知は種類毎で無効に出来ます（" + inlineCode("/settings report-types disable") + "）。", "自動通知でユーザー／ロールへのメンションをさせる事が出来ます（" + inlineCode("/settings mentions add") + "）。"]) }, []);		 
-					SENDER.setDiscordOption();
-					SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CLIENT.guilds.cache.get(serverId).systemChannelId);
-				}, false, false);
-			}
+			if (!registeredDiscordServerIds.includes(serverId)) createDiscordServer(serverId, DISCORD_CLIENT.guilds.cache.get(serverId).systemChannelId);
 		});
 	}, false, false);
 
@@ -118,18 +106,11 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 });
 
 DISCORD_CLIENT.on(Events.GuildCreate, (guild) => {
-	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types) VALUES (${guild.id}, NULL, '{ \"users\": [], \"roles\": [] }', '{ \"disabled\": [] }');`, () => {
-		outputLog(`サーバー（名称：${guild.name}、ID：${guild.id}）に参加しました。`);
-		const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さり有難う御座います！\n" + heading("初期設定", 2) + "\n本botでは、サーバー毎にユーザーが指定したテキストチャンネルに「自動通知」をします。\nまずは、設定コマンド（" + inlineCode("/settings channel join") + "）でテキストチャンネルを登録して下さい。\n" + heading("機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、間も無く予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", "自動通知は種類毎で無効に出来ます（" + inlineCode("/settings report-types disable") + "）。", "自動通知でユーザー／ロールへのメンションをさせる事が出来ます（" + inlineCode("/settings mentions add") + "）。"]) }, []);		 
-		SENDER.setDiscordOption();
-		SENDER.sendToDiscord(DISCORD_CLIENT, guild.systemChannelId);
-	}, false, false);
+	createDiscordServer(guild.id, guild.systemChannelId);
 });
 
 DISCORD_CLIENT.on(Events.GuildDelete, (guild) => {
-	queryDatabase(MYSQL_CONNECTION, `DELETE FROM discord_servers WHERE server_id=${guild.id};`, () => {
-		outputLog(`サーバー（名称：${guild.name}、ID：${guild.id}）から退出しました。`);
-	}, false, false);
+	deleteDiscordServer(guild.id);
 });
 
 async function postPeriodicReports(nowHours, periodTime, prefacePeriodText, type) {
@@ -173,4 +154,19 @@ function setDiscordAvtivity() {
 	} catch (error) {
 		outputLog(error, "error");
 	}
+}
+
+function createDiscordServer(serverId, serverSystemChannelId) {
+	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [] }', '{ \"disabled\": [] }');`, () => {
+		outputLog(`サーバー（ID：${serverId}）に参加しました。`);
+		const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さり有難う御座います！\n" + heading("初期設定", 2) + "\n本botでは、サーバー毎にユーザーが指定したテキストチャンネルに「自動通知」をします。\nまずは、設定コマンド（" + inlineCode("/settings channel join") + "）でテキストチャンネルを登録して下さい。\n" + heading("機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、間も無く予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", "自動通知は種類毎で無効に出来ます（" + inlineCode("/settings report-types disable") + "）。", "自動通知でユーザー／ロールへのメンションをさせる事が出来ます（" + inlineCode("/settings mentions add") + "）。"]) }, []);		 
+		SENDER.setDiscordOption();
+		SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
+	}, false, false);
+}
+
+function deleteDiscordServer(serverId) {
+	queryDatabase(MYSQL_CONNECTION, `DELETE FROM discord_servers WHERE server_id=${serverId};`, () => {
+		outputLog(`サーバー（ID：${serverId}）から退出しました。`);
+	}, false, false);
 }
