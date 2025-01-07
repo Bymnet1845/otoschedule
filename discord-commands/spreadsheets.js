@@ -8,7 +8,7 @@ dotenv.config();
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
 export const SpreadsheetsCommand = {
-	data: new SlashCommandBuilder().setName("spreadsheets").setDescription("本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。"),
+	data: new SlashCommandBuilder().setName("spreadsheets").setDescription("本家「音MAD周辺配信表」へのリンクを表示します。"),
 	execute:
 		async function (interaction) {
 			let spreadsheetList = new Array;
@@ -24,7 +24,7 @@ export const SpreadsheetsCommand = {
 			});
 
 			spreadsheetsSheet.values.forEach((spreadsheet) => { spreadsheetList.push(`${spreadsheet[0]}：${spreadsheet[1]}`) });
-			const SENDER = new Sender({ plain: "本家スプレッドシート「音MAD周辺配信表」へのリンクは次の通りです。\n" + unorderedList(spreadsheetList) }, []);
+			const SENDER = new Sender({ plain: "本家「音MAD周辺配信表」へのリンクは次の通りです。\n" + unorderedList(spreadsheetList) }, []);
 			SENDER.setDiscordOption();
 			SENDER.replyToDiscord(interaction);
 		},
