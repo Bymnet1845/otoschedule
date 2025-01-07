@@ -16,8 +16,8 @@ const DISCORD_REST = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
 (async function () {
     try {
         await DISCORD_REST.put(Routes.applicationCommands(DISCORD_APPLICATION_ID), { body: COMMANDS });
-	  	  outputLog("Discordのコマンドが登録されました。");
+	  	outputLog("Discordのコマンドが登録されました。");
     } catch (error) {
-	    	outputLog(error, "error");
+	    outputLog(error, "error");
     }
 })();
