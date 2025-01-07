@@ -1,9 +1,6 @@
-import * as dotenv from "dotenv";
 import { SlashCommandBuilder, heading, unorderedList, hyperlink, inlineCode } from "discord.js";
 import Sender from "../sender.js";
 import packageJson from "../package.json" assert { type: "json" };
-
-dotenv.config();
 
 export const AboutCommand = {
 	data: new SlashCommandBuilder().setName("about").setDescription("このbotについての情報を表示します。"),
