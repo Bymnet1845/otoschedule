@@ -3,13 +3,14 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import outputLog from "./output-log.js";
 import { SettingsCommand } from "./discord-commands/settings.js";
+import { ListCommand } from "./discord-commands/list.js";
 import { AboutCommand } from "./discord-commands/about.js";
 import { SpreadsheetsCommand } from "./discord-commands/spreadsheets.js";
 
 dotenv.config();
 const DISCORD_APPLICATION_ID = process.env.DISCORD_APPLICATION_ID;
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const COMMANDS = [SettingsCommand.data.toJSON(), AboutCommand.data.toJSON(), SpreadsheetsCommand.data.toJSON()];
+const COMMANDS = [SettingsCommand.data.toJSON(), ListCommand.data.toJSON(), AboutCommand.data.toJSON(), SpreadsheetsCommand.data.toJSON()];
 const DISCORD_REST = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
 
 (async function () {
