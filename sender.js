@@ -34,27 +34,25 @@ export default class Sender {
 		}
 
 		async function post(message, beforePostId) {
-			try {
-				let parameters = {
-					i: MISSKEY_ACCESS_TOKEN,
-					text: message,
-					visibility: "specified"
-				};
+			let parameters = {
+				i: MISSKEY_ACCESS_TOKEN,
+				text: message,
+				visibility: "specified"
+			};
 
-				if (beforePostId !== undefined) parameters.replyId = beforePostId;
+			if (beforePostId !== undefined) parameters.replyId = beforePostId;
 
-				return await fetch(MISSKEY_INSTANCE + "/api/notes/create", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(parameters)
-				}).then((response) => {
-					return response.json();
-				}).then((json) => {
-					return json.createdNote.id;
-				});
-			} catch (error) {
+			return await fetch(MISSKEY_INSTANCE + "/api/notes/create", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(parameters)
+			}).then((response) => {
+				return response.json();
+			}).then((json) => {
+				return json.createdNote.id;
+			}).catch((error) => {
 				outputLog(error, "error");
-			}
+			});
 		}
 	}
 
