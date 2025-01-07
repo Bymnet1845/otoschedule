@@ -66,8 +66,8 @@ DISCORD_CLIENT.on("ready", (event) => {
 		const NOW_UNIX_TIME = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate(), NOW.getHours(), NOW.getMinutes(), 0).getTime();
 		
 		const PREFACE = {
-			plain: "間も無く開始予定の音MAD周辺配信はこちら！",
-			mfm: "間も無く開始予定の音MAD周辺配信はこちら！"
+			plain: "まもなく開始予定の音MAD周辺配信はこちら！",
+			mfm: "まもなく開始予定の音MAD周辺配信はこちら！"
 		};
 
 		const SCHEDULE_LIST = await getScheduleList(NOW_UNIX_TIME + 300000, NOW_UNIX_TIME + 899999);

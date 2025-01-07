@@ -12,7 +12,7 @@ const REPORT_TYPES = ["today", "tonight", "soon", "update"];
 const REPORT_TYPE_NAMES = {
 	today: "今日予定の配信（0時）",
 	tonight: "今夜予定の配信（18時）",
-	soon: "間も無く開始予定の配信（10分間隔）",
+	soon: "まもなく開始予定の配信（10分間隔）",
 	update: "音MAD周辺配信表の更新（20分間隔）"
 };
 
