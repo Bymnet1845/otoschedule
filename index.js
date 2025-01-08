@@ -90,6 +90,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 
 DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 	if (!interaction.isChatInputCommand()) return;
+	await interaction.deferReply();
 
 	if (interaction.commandName === SettingsCommand.data.name) {
 		try {
