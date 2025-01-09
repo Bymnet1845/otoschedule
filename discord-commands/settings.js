@@ -12,8 +12,8 @@ const REPORT_TYPES = ["today", "tonight", "soon", "update"];
 const REPORT_TYPE_NAMES = {
 	today: "今日予定の配信（0時）",
 	tonight: "今夜予定の配信（18時）",
-	soon: "まもなく開始予定の配信（10分間隔）",
-	update: "音MAD周辺配信表の更新（20分間隔）"
+	soon: "まもなく開始予定の配信",
+	update: "音MAD周辺配信表の更新"
 };
 
 export const SettingsCommand = {
@@ -47,8 +47,8 @@ export const SettingsCommand = {
 									.addChoices(
 										{ name: "今日予定の配信（0時）", value: "today" },
 										{ name: "今夜予定の配信（18時）", value: "tonight" },
-										{ name: "まもなく開始予定の配信（10分間隔）", value: "soon" },
-										{ name: "音MAD周辺配信表の更新（20分間隔）", value: "update" }
+										{ name: "まもなく開始予定の配信", value: "soon" },
+										{ name: "音MAD周辺配信表の更新", value: "update" }
 									)
 							)
 					)
@@ -61,8 +61,8 @@ export const SettingsCommand = {
 									.addChoices(
 										{ name: "今日予定の配信（0時）", value: "today" },
 										{ name: "今夜予定の配信（18時）", value: "tonight" },
-										{ name: "まもなく開始予定の配信（10分間隔）", value: "soon" },
-										{ name: "音MAD周辺配信表の更新（20分間隔）", value: "update" }
+										{ name: "まもなく開始予定の配信", value: "soon" },
+										{ name: "音MAD周辺配信表の更新", value: "update" }
 									)
 							)
 					)
