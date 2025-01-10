@@ -132,7 +132,26 @@ export const SettingsCommand = {
 											}, true, true);
 										}
 									} else if (interaction.options.getRole("target")) {
-										if (mentions.roles.includes(TARGET_ID)) {
+										if (TARGET_ID === interaction.guild.roles.everyone.id) {
+											switch (mentions.everyone) {
+												case true:
+													const SENDER = new Sender({ plain: "自動通知のメンション対象ロールに @everyone は既に登録されています。" }, []);
+													SENDER.setDiscordOption();
+													SENDER.replyToDiscord(interaction, true);
+													MYSQL_CONNECTION.end();
+													break;
+												default:
+													mentions.everyone = true;
+
+													queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
+														const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに @everyone を追加しました。` }, []);
+														SENDER.setDiscordOption();
+														SENDER.replyToDiscord(interaction);
+													}, true, true);
+													
+													break;
+											}
+										} else if (mentions.roles.includes(TARGET_ID)) {
 											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は既に登録されています。` }, []);
 											SENDER.setDiscordOption();
 											SENDER.replyToDiscord(interaction, true);
@@ -172,7 +191,26 @@ export const SettingsCommand = {
 											MYSQL_CONNECTION.end();
 										}
 									} else if (interaction.options.getRole("target")) {
-										if (mentions.roles.includes(TARGET_ID)) {
+										if (TARGET_ID === interaction.guild.roles.everyone.id) {
+											switch (mentions.everyone) {
+												case true:
+													mentions.everyone = false;
+
+													queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
+														const SENDER = new Sender({ plain: `自動通知のメンション対象ロールから @everyone を削除しました。` }, []);
+														SENDER.setDiscordOption();
+														SENDER.replyToDiscord(interaction);
+													}, true, true);
+													
+													break;
+												default:
+													const SENDER = new Sender({ plain: "自動通知のメンション対象ロールに @everyone は登録されていません。" }, []);
+													SENDER.setDiscordOption();
+													SENDER.replyToDiscord(interaction, true);
+													MYSQL_CONNECTION.end();
+													break;
+											}
+										} else if (mentions.roles.includes(TARGET_ID)) {
 											mentions.roles.splice(mentions.roles.findIndex((roleId) => { roleId === TARGET_ID }), 1);
 
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
@@ -196,7 +234,7 @@ export const SettingsCommand = {
 									let mentions = JSON.parse(results[0]["mentions"]);
 									let preface = { plain: "" };
 
-									if (mentions.users.length === 0 && mentions.roles.length === 0) {
+									if (mentions.users.length === 0 && mentions.roles.length === 0 && !mentions.everyone) {
 										preface.plain = "自動通知のメンション対象は登録されていません。";
 									} else {
 										preface.plain += "自動通知のメンション対象は次の通りです。";
@@ -208,9 +246,10 @@ export const SettingsCommand = {
 											preface.plain += unorderedList(userMentions);
 										}
 
-										if (mentions.roles.length > 0) {
+										if (mentions.everyone || mentions.roles.length > 0) {
 											preface.plain += "\n" + heading("ロール", 2) + "\n";
 											let roleMentions = new Array();
+											if (mentions.everyone) roleMentions.push("@everyone");
 											mentions.roles.forEach((role) => { roleMentions.push(roleMention(role)) });
 											preface.plain += unorderedList(roleMentions);
 										}

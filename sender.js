@@ -118,6 +118,7 @@ export default class Sender {
 
 		if (mentions) {
 			let mentionText = "";
+			if (mentions.everyone) mentionText += "@everyone ";
 			if (mentions.roles) mentions.roles.forEach((role) => { mentionText += "<@&" + role + "> " });
 			if (mentions.users) mentions.users.forEach((user) => { mentionText += "<@" + user + "> " });
 			messageList.push(mentionText + "\n" + this.preface.plain);
