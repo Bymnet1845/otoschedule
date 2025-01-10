@@ -70,7 +70,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 			mfm: "まもなく開始予定の音MAD周辺配信はこちら！"
 		};
 
-		const SCHEDULE_LIST = await getScheduleList(NOW_UNIX_TIME + 300000, NOW_UNIX_TIME + 899999);
+		const SCHEDULE_LIST = await getScheduleList(NOW_UNIX_TIME + 600000, NOW_UNIX_TIME + 1199999);
 		if (SCHEDULE_LIST.length > 0) postReports(PREFACE, SCHEDULE_LIST, "soon");
 	});
 
