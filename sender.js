@@ -125,23 +125,25 @@ export default class Sender {
 			messageList.push(this.preface.plain);
 		}
 
-		this.scheduleList.forEach((schedule) => {
-			let scheduleLink;
+		if (this.scheduleList.length > 0) {
+			this.scheduleList.forEach((schedule) => {
+				let scheduleLink;
 
-			if (schedule.link.hasTitle) {
-				scheduleLink = hyperlink(schedule.link.title, schedule.link.url);
-			} else {
-				scheduleLink = schedule.link.url;
-			}
+				if (schedule.link.hasTitle) {
+					scheduleLink = hyperlink(schedule.link.title, schedule.link.url);
+				} else {
+					scheduleLink = schedule.link.url;
+				}
 
-			let scheduleText = heading(schedule.title, 2) + "\n" + (schedule.type ? schedule.type : "") + schedule.time + "\n" + scheduleLink;
+				let scheduleText = heading(schedule.title, 2) + "\n" + (schedule.type ? schedule.type : "") + schedule.time + "\n" + scheduleLink;
 
-			if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 1 > 2000) {
-				messageList.push(scheduleText);
-			} else {
-				messageList[messageList.length - 1] += "\n" + scheduleText;
-			}
-		});
+				if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 1 > 2000) {
+					messageList.push(scheduleText);
+				} else {
+					messageList[messageList.length - 1] += "\n" + scheduleText;
+				}
+			});
+		}
 
 		this.discordMessageList = messageList;
 	}

@@ -147,6 +147,7 @@ DISCORD_CLIENT.on(Events.GuildDelete, (guild) => {
 async function postPeriodicReports(nowHours, periodTime, prefacePeriodText, type) {
 	const NOW = new Date();
 	const START_UNIX_TIME = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate(), nowHours, 0, 0).getTime();
+	const SCHEDULE_LIST = await getScheduleList(START_UNIX_TIME, START_UNIX_TIME + periodTime, false, true);
 	let prefaceDayTextColor = "";
 
 	if (japaneseHolidays.isHoliday(NOW) !== undefined || NOW.getDay() === 0) {
@@ -156,22 +157,32 @@ async function postPeriodicReports(nowHours, periodTime, prefacePeriodText, type
 	}
 
 	const PREFACE = {
-		plain: format(NOW, "yyyy年M月d日（") + DAY_OF_WEEK[NOW.getDay()] + "）\n" + prefacePeriodText + "予定の音MAD周辺配信はこちら！",
-		mfm: format(NOW, "yyyy年M月d日（") + (prefaceDayTextColor ? "$[fg.color=" + prefaceDayTextColor + " " : "") + DAY_OF_WEEK[NOW.getDay()] + (prefaceDayTextColor ? "]" : "") + "）\n" + prefacePeriodText + "予定の音MAD周辺配信はこちら！"
+		plain: format(NOW, "yyyy年M月d日（") + DAY_OF_WEEK[NOW.getDay()] + "）\n" + prefacePeriodText + "予定の音MAD周辺配信は",
+		mfm: format(NOW, "yyyy年M月d日（") + (prefaceDayTextColor ? "$[fg.color=" + prefaceDayTextColor + " " : "") + DAY_OF_WEEK[NOW.getDay()] + (prefaceDayTextColor ? "]" : "") + "）\n" + prefacePeriodText + "予定の音MAD周辺配信は"
 	};
 
-	const SCHEDULE_LIST = await getScheduleList(START_UNIX_TIME, START_UNIX_TIME + periodTime, false, true);
-	if (SCHEDULE_LIST.length > 0) postReports(PREFACE, SCHEDULE_LIST, type);
+	if (SCHEDULE_LIST.length > 0) {
+		PREFACE.plain += "こちら！";
+		PREFACE.mfm += "こちら！";
+	} else {
+		PREFACE.plain += "見つかりませんでした。";
+		PREFACE.mfm += "見つかりませんでした。";
+	}
+
+	postReports(PREFACE, SCHEDULE_LIST, type);
 }
 
 function postReports(preface, scheduleList, type) {
 	const SENDER = new Sender(preface, scheduleList);
-	SENDER.sendToMisskey();
-	// SENDER.sendToBluesky();
+
+	if (scheduleList.length > 0) {
+		SENDER.sendToMisskey();
+		// SENDER.sendToBluesky();
+	}
 
 	queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
 		for (let i = 0; i < results.length; i++) {
-			if (results[i]["channel_id"] && !JSON.parse(results[i]["report_types"]).disabled.includes(type)) {
+			if (results[i]["channel_id"] && !JSON.parse(results[i]["report_types"]).disabled.includes(type) && (scheduleList.length > 0 || JSON.parse(results[i]["empty_report"]))) {
 				SENDER.setDiscordOption(JSON.parse(results[i]["mentions"]));
 				SENDER.sendToDiscord(DISCORD_CLIENT, results[i]["channel_id"]);
 			}

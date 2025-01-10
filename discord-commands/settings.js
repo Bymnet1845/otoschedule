@@ -78,6 +78,13 @@ export const SettingsCommand = {
 					)
 					.addSubcommand(subcommand => subcommand.setName("leave").setDescription("自動通知するテキストチャンネルの登録を解除します。"))
 					.addSubcommand(subcommand => subcommand.setName("show").setDescription("自動通知するテキストチャンネルを表示します。"))
+			)
+			.addSubcommandGroup(subcommandGroup =>
+				subcommandGroup
+					.setName("empty-report").setDescription("配信が無い時の定時通知に関する設定をします。")
+					.addSubcommand(subcommand => subcommand.setName("enable").setDescription("配信が無い時の定時通知を有効にします。"))
+					.addSubcommand(subcommand => subcommand.setName("disable").setDescription("配信が無い時の定時通知を無効にします。"))
+					.addSubcommand(subcommand => subcommand.setName("show").setDescription("配信が無い時の定時通知の有効／無効の状態を表示します。"))
 			),
 	execute:
 		async function (interaction) {
@@ -315,6 +322,36 @@ export const SettingsCommand = {
 								}
 
 								const SENDER = new Sender(preface, []);
+								SENDER.setDiscordOption();
+								SENDER.replyToDiscord(interaction);
+							}, true, true);
+
+							break;
+					}
+
+				case "empty-report":
+					switch (interaction.options.getSubcommand()) {
+						case "enable":
+							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET empty_report=TRUE WHERE server_id=${SERVER_ID};`, () => {
+								const SENDER = new Sender({ plain: "配信が無い時の定時通知を有効にしました。" }, []);
+								SENDER.setDiscordOption();
+								SENDER.replyToDiscord(interaction);
+							}, true, true);
+
+							break;
+
+						case "disable":
+							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET empty_report=FALSE WHERE server_id=${SERVER_ID};`, () => {
+								const SENDER = new Sender({ plain: "配信が無い時の定時通知を無効にしました。" }, []);
+								SENDER.setDiscordOption();
+								SENDER.replyToDiscord(interaction);
+							}, true, true);
+
+							break;
+
+						case "show":
+							queryDatabase(MYSQL_CONNECTION, `SELECT empty_report FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
+								const SENDER = new Sender({ plain: `配信が無い時の定時通知は${ results[0]["empty_report"] ? "有効" : "無効" }です。` }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
 							}, true, true);
