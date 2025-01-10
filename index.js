@@ -199,9 +199,9 @@ function setDiscordAvtivity() {
 }
 
 function createDiscordServer(serverId, serverSystemChannelId) {
-	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [] }', '{ \"disabled\": [] }');`, () => {
+	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types, empty_report) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [] }', '{ \"disabled\": [] }', FALSE);`, () => {
 		outputLog(`サーバー（ID：${serverId}）に参加しました。`);
-		const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さりありがとうございます！\n「音MAD周辺配信通知bot」は、音MAD周りの生放送配信の情報を集めた「音MAD周辺配信表」の情報を自動で通知するbotです。\n" + heading("初期設定", 2) + "\n本botでは、ユーザーが登録したテキストチャンネルに「自動通知」をします。\nまずは、" + inlineCode("/settings channel join") + "コマンドでテキストチャンネルを登録して下さい。\n" + heading("機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、まもなく開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", inlineCode("/settings report-types disable") + "コマンドで自動通知を種別毎に無効化出来ます。", inlineCode("/settings mentions add") + "コマンドでは、自動通知で特定のユーザー／ロールにメンションさせる様に設定出来ます。", inlineCode("/list") + "系コマンドで指定された期間の配信の一覧を表示します。", inlineCode("/spreadsheets") + "コマンドで本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。"]) }, []);		 
+		const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さりありがとうございます！\n「音MAD周辺配信通知bot」は、音MAD周りの生放送配信の情報を集めた「音MAD周辺配信表」の情報を自動で通知するbotです。\n" + heading("初期設定", 2) + "\n本botでは、ユーザーが登録したテキストチャンネルに「自動通知」をします。\nまずは、" + inlineCode("/settings channel join") + "コマンドでテキストチャンネルを登録して下さい。\n" + heading("主な機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、まもなく開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", inlineCode("/list") + "系コマンドで指定された期間の配信の一覧を表示します。", inlineCode("/spreadsheets") + "コマンドで本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。"]) + "\n" + heading("カスタマイズ", 2) + "\n" + unorderedList([inlineCode("/settings report-types disable") + "：種別別に自動通知を無効にします。", inlineCode("/settings empty-report enable") + "：通知出来る配信が無い時にも、0時／18時の自動通知を有効にします。", inlineCode("/settings mentions add") + "：自動通知で指定したユーザー／ロールにメンションさせます。"]) }, []);		 
 		SENDER.setDiscordOption();
 		SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
 	}, false, false);
