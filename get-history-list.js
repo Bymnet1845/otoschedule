@@ -2,12 +2,12 @@ import * as dotenv from "dotenv";
 import { format } from "date-fns";
 
 dotenv.config();
-
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const GOOGLE_SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID;
 
 export default async function getHistoryList(startUnixTime, endUnixTime) {
 	let historyList = new Array();
-	let historySheet = await fetch("https://sheets.googleapis.com/v4/spreadsheets/1PI0zvp4NE4iPvmMAEYYxpX1SWphZgWCznsGe0eUMck4/values/history?valueRenderOption=UNFORMATTED_VALUE&key=" + GOOGLE_API_KEY, {
+	let historySheet = await fetch("https://sheets.googleapis.com/v4/spreadsheets/" + GOOGLE_SPREADSHEET_ID + "/values/history?valueRenderOption=UNFORMATTED_VALUE&key=" + GOOGLE_API_KEY, {
 		method: "GET"
 	}).then((response) => {
 		return response.json();
