@@ -96,15 +96,17 @@ DISCORD_CLIENT.on("ready", (event) => {
 		if (ANNOUNCEMENT_LIST.length > 0) {
 			ANNOUNCEMENT_LIST.forEach((announcement) => {
 				const SENDER = new Sender({ plain: announcement.content.bluesky, misskey: announcement.content.misskey, discord: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
-				// SENDER.sendToBluesky();
-				SENDER.sendToMisskey();
+				// if (announcement.content.bluesky) SENDER.sendToBluesky();
+				if (announcement.content.misskey) SENDER.sendToMisskey();
 				SENDER.setDiscordOption();
-	
-				queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
-					for (let i = 0; i < results.length; i++) {
-						SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CLIENT.guilds.cache.get(results[i]["server_id"]).systemChannelId);
-					}
-				});
+
+				if (announcement.content.discord) {
+					queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
+						for (let i = 0; i < results.length; i++) {
+							SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CLIENT.guilds.cache.get(results[i]["server_id"]).systemChannelId);
+						}
+					});
+				}
 			});
 		}
 	});
