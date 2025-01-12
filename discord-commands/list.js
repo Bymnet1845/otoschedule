@@ -44,13 +44,13 @@ export const ListCommand = {
 					break;
 			}
 			
-			let preface = { plain: `${format(startDateTime, "yyyy年M月d日")}（${DAY_OF_WEEK[startDateTime.getDay()]}）0時 ～ ${format(endDateTime, "yyyy年M月d日")}（${DAY_OF_WEEK[endDateTime.getDay()]}）4時` + "\n音MAD周辺配信表に掲載されている配信は" };
+			let preface = { discord: `${format(startDateTime, "yyyy年M月d日")}（${DAY_OF_WEEK[startDateTime.getDay()]}）0時 ～ ${format(endDateTime, "yyyy年M月d日")}（${DAY_OF_WEEK[endDateTime.getDay()]}）4時` + "\n音MAD周辺配信表に掲載されている配信は" };
 			const SCHEDULE_LIST = await getScheduleList(startDateTime.getTime(), endDateTime.getTime());
 
 			if (SCHEDULE_LIST.length > 0) {
-				preface.plain += "こちら！";
+				preface.discord += "こちら！";
 			} else {
-				preface.plain += "ありませんでした。";
+				preface.discord += "ありませんでした。";
 			}
 
 			const SENDER = new Sender(preface, SCHEDULE_LIST);

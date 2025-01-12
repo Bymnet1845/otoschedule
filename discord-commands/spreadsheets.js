@@ -24,7 +24,7 @@ export const SpreadsheetsCommand = {
 			});
 
 			spreadsheetsSheet.values.forEach((spreadsheet) => { spreadsheetList.push(`${spreadsheet[0]}：${spreadsheet[1]}`) });
-			const SENDER = new Sender({ plain: "本家スプレッドシート「音MAD周辺配信表」へのリンクは次の通りです。\n" + unorderedList(spreadsheetList) }, []);
+			const SENDER = new Sender({ discord: "本家スプレッドシート「音MAD周辺配信表」へのリンクは次の通りです。\n" + unorderedList(spreadsheetList) }, []);
 			SENDER.setDiscordOption();
 			SENDER.replyToDiscord(interaction);
 		},

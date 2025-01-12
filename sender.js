@@ -15,7 +15,7 @@ export default class Sender {
 	async sendToMisskey() {
 		const MISSKEY_INSTANCE = process.env.MISSKEY_INSTANCE;
 		const MISSKEY_ACCESS_TOKEN = process.env.MISSKEY_ACCESS_TOKEN;
-		let messageList = [this.preface.mfm];
+		let messageList = [this.preface.misskey];
 		let beforePostId;
 
 		this.scheduleList.forEach((schedule) => {
@@ -115,15 +115,16 @@ export default class Sender {
 
 	setDiscordOption(mentions) {
 		let messageList = new Array();
+		const PREFACE = this.preface.discord ? this.preface.discord : this.preface.plain;
 
 		if (mentions) {
 			let mentionText = "";
 			if (mentions.everyone) mentionText += "@everyone ";
 			if (mentions.roles) mentions.roles.forEach((role) => { mentionText += "<@&" + role + "> " });
 			if (mentions.users) mentions.users.forEach((user) => { mentionText += "<@" + user + "> " });
-			messageList.push(mentionText + "\n" + this.preface.plain);
+			messageList.push(mentionText + "\n" + PREFACE);
 		} else {
-			messageList.push(this.preface.plain);
+			messageList.push(PREFACE);
 		}
 
 		if (this.scheduleList.length > 0) {

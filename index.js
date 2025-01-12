@@ -68,7 +68,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 		
 		const PREFACE = {
 			plain: "まもなく開始予定の音MAD周辺配信はこちら！",
-			mfm: "まもなく開始予定の音MAD周辺配信はこちら！"
+			misskey: "まもなく開始予定の音MAD周辺配信はこちら！"
 		};
 
 		const SCHEDULE_LIST = await getScheduleList(NOW_UNIX_TIME + 600000, NOW_UNIX_TIME + 1199999);
@@ -81,7 +81,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 		
 		const PREFACE = {
 			plain: "音MAD周辺配信表が更新されました！",
-			mfm: "音MAD周辺配信表が更新されました！"
+			misskey: "音MAD周辺配信表が更新されました！"
 		};
 
 		const HISTORY_LIST = await getHistoryList(NOW_UNIX_TIME - 1499999, NOW_UNIX_TIME - 300000);
@@ -95,16 +95,14 @@ DISCORD_CLIENT.on("ready", (event) => {
 
 		if (ANNOUNCEMENT_LIST.length > 0) {
 			ANNOUNCEMENT_LIST.forEach((announcement) => {
-				const SENDER = new Sender({ plain: announcement.content.bluesky, mfm: announcement.content.misskey }, []);
+				const SENDER = new Sender({ plain: announcement.content.bluesky, misskey: announcement.content.misskey, discord: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
 				// SENDER.sendToBluesky();
 				SENDER.sendToMisskey();
-				
-				const DISCORD_SENDER = new Sender({ plain: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
-				DISCORD_SENDER.setDiscordOption();
+				SENDER.setDiscordOption();
 	
 				queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
 					for (let i = 0; i < results.length; i++) {
-						DISCORD_SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CLIENT.guilds.cache.get(results[i]["server_id"]).systemChannelId);
+						SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CLIENT.guilds.cache.get(results[i]["server_id"]).systemChannelId);
 					}
 				}, false, false);
 			});
@@ -121,7 +119,7 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 			await SettingsCommand.execute(interaction);
 		} catch (error) {
 			outputLog(error, "error");
-			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
+			const SENDER = Sender({ discord: "コマンド実行時にエラーが発生しました。" });
 			SENDER.setDiscordOption();
 			SENDER.replyToDiscord(interaction, true);
 		}
@@ -130,7 +128,7 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 			await ListCommand.execute(interaction);
 		} catch (error) {
 			outputLog(error, "error");
-			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
+			const SENDER = Sender({ discord: "コマンド実行時にエラーが発生しました。" });
 			SENDER.setDiscordOption();
 			SENDER.replyToDiscord(interaction, true);
 		}
@@ -139,7 +137,7 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 			await AboutCommand.execute(interaction);
 		} catch (error) {
 			outputLog(error, "error");
-			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
+			const SENDER = Sender({ discord: "コマンド実行時にエラーが発生しました。" });
 			SENDER.setDiscordOption();
 			SENDER.replyToDiscord(interaction, true);
 		}
@@ -148,13 +146,13 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 			await SpreadsheetsCommand.execute(interaction);
 		} catch (error) {
 			outputLog(error, "error");
-			const SENDER = Sender({ plain: "コマンド実行時にエラーが発生しました。" });
+			const SENDER = Sender({ discord: "コマンド実行時にエラーが発生しました。" });
 			SENDER.setDiscordOption();
 			SENDER.replyToDiscord(interaction, true);
 		}
 	} else {
 		outputLog(`${interaction.commandName}というコマンドは存在しません。`, "error");
-		const SENDER = Sender({ plain: `${interaction.commandName}というコマンドは存在しません。` });
+		const SENDER = Sender({ discord: `${interaction.commandName}というコマンドは存在しません。` });
 		SENDER.setDiscordOption();
 		SENDER.replyToDiscord(interaction, true);
 	}
@@ -182,15 +180,15 @@ async function postPeriodicReports(nowHours, periodTime, prefacePeriodText, type
 
 	const PREFACE = {
 		plain: format(NOW, "yyyy年M月d日（") + DAY_OF_WEEK[NOW.getDay()] + "）\n" + prefacePeriodText + "予定の音MAD周辺配信は",
-		mfm: format(NOW, "yyyy年M月d日（") + (prefaceDayTextColor ? "$[fg.color=" + prefaceDayTextColor + " " : "") + DAY_OF_WEEK[NOW.getDay()] + (prefaceDayTextColor ? "]" : "") + "）\n" + prefacePeriodText + "予定の音MAD周辺配信は"
+		misskey: format(NOW, "yyyy年M月d日（") + (prefaceDayTextColor ? "$[fg.color=" + prefaceDayTextColor + " " : "") + DAY_OF_WEEK[NOW.getDay()] + (prefaceDayTextColor ? "]" : "") + "）\n" + prefacePeriodText + "予定の音MAD周辺配信は"
 	};
 
 	if (SCHEDULE_LIST.length > 0) {
 		PREFACE.plain += "こちら！";
-		PREFACE.mfm += "こちら！";
+		PREFACE.misskey += "こちら！";
 	} else {
 		PREFACE.plain += "見つかりませんでした。";
-		PREFACE.mfm += "見つかりませんでした。";
+		PREFACE.misskey += "見つかりませんでした。";
 	}
 
 	postReports(PREFACE, SCHEDULE_LIST, type);
@@ -225,7 +223,7 @@ function setDiscordAvtivity() {
 function createDiscordServer(serverId, serverSystemChannelId) {
 	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types, empty_report) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [], \"everyone\": false }', '{ \"disabled\": [] }', FALSE);`, async () => {
 		outputLog(`サーバー（ID：${serverId}）に参加しました。`);
-		const SENDER = new Sender({ plain: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さりありがとうございます！\n「音MAD周辺配信通知bot」は、音MAD周りの生放送配信の情報を集めた「音MAD周辺配信表」の情報を自動で通知するbotです。\n" + heading("初期設定", 2) + "\n本botでは、ユーザーが登録したテキストチャンネルに「自動通知」をします。\nまずは、" + inlineCode("/settings channel join") + "コマンドでテキストチャンネルを登録して下さい。\n" + heading("主な機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、まもなく開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", inlineCode("/list") + "系コマンドで指定された期間の配信の一覧を表示します。", inlineCode("/spreadsheets") + "コマンドで本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。"]) + "\n" + heading("カスタマイズ", 2) + "\n" + unorderedList([inlineCode("/settings report-types disable") + "：種別別に自動通知を無効にします。", inlineCode("/settings empty-report enable") + "：通知出来る配信が無い時にも、0時／18時の自動通知を有効にします。", inlineCode("/settings mentions add") + "：自動通知でメンションさせるユーザー／ロールを登録します。"]) }, []);		 
+		const SENDER = new Sender({ discord: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さりありがとうございます！\n「音MAD周辺配信通知bot」は、音MAD周りの生放送配信の情報を集めた「音MAD周辺配信表」の情報を自動で通知するbotです。\n" + heading("初期設定", 2) + "\n本botでは、ユーザーが登録したテキストチャンネルに「自動通知」をします。\nまずは、" + inlineCode("/settings channel join") + "コマンドでテキストチャンネルを登録して下さい。\n" + heading("主な機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、まもなく開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", inlineCode("/list") + "系コマンドで指定された期間の配信の一覧を表示します。", inlineCode("/spreadsheets") + "コマンドで本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。"]) + "\n" + heading("カスタマイズ", 2) + "\n" + unorderedList([inlineCode("/settings report-types disable") + "：種別別に自動通知を無効にします。", inlineCode("/settings empty-report enable") + "：通知出来る配信が無い時にも、0時／18時の自動通知を有効にします。", inlineCode("/settings mentions add") + "：自動通知でメンションさせるユーザー／ロールを登録します。"]) }, []);		 
 		SENDER.setDiscordOption();
 		SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
 
@@ -235,7 +233,7 @@ function createDiscordServer(serverId, serverSystemChannelId) {
 	
 		if (ANNOUNCEMENT_LIST.length > 0) {
 			ANNOUNCEMENT_LIST.forEach((announcement) => {
-				const ANNOUNCEMENT_SENDER = new Sender({ plain: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
+				const ANNOUNCEMENT_SENDER = new Sender({ discord: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
 				ANNOUNCEMENT_SENDER.setDiscordOption();
 				ANNOUNCEMENT_SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
 			});

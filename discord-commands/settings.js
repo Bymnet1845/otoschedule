@@ -118,7 +118,7 @@ export const SettingsCommand = {
 
 									if (interaction.options.getUser("target")) {
 										if (mentions.users.includes(TARGET_ID)) {
-											const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は既に登録されています。` }, []);
+											const SENDER = new Sender({ discord: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は既に登録されています。` }, []);
 											SENDER.setDiscordOption();
 											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
@@ -126,7 +126,7 @@ export const SettingsCommand = {
 											mentions.users.push(TARGET_ID);
 
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
-												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> を追加しました。` }, []);
+												const SENDER = new Sender({ discord: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
 											}, true, true);
@@ -135,7 +135,7 @@ export const SettingsCommand = {
 										if (TARGET_ID === interaction.guild.roles.everyone.id) {
 											switch (mentions.everyone) {
 												case true:
-													const SENDER = new Sender({ plain: "自動通知のメンション対象ロールに @everyone は既に登録されています。" }, []);
+													const SENDER = new Sender({ discord: "自動通知のメンション対象ロールに @everyone は既に登録されています。" }, []);
 													SENDER.setDiscordOption();
 													SENDER.replyToDiscord(interaction, true);
 													MYSQL_CONNECTION.end();
@@ -144,7 +144,7 @@ export const SettingsCommand = {
 													mentions.everyone = true;
 
 													queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
-														const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに @everyone を追加しました。` }, []);
+														const SENDER = new Sender({ discord: `自動通知のメンション対象ロールに @everyone を追加しました。` }, []);
 														SENDER.setDiscordOption();
 														SENDER.replyToDiscord(interaction);
 													}, true, true);
@@ -152,7 +152,7 @@ export const SettingsCommand = {
 													break;
 											}
 										} else if (mentions.roles.includes(TARGET_ID)) {
-											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は既に登録されています。` }, []);
+											const SENDER = new Sender({ discord: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は既に登録されています。` }, []);
 											SENDER.setDiscordOption();
 											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
@@ -160,7 +160,7 @@ export const SettingsCommand = {
 											mentions.roles.push(TARGET_ID);
 
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
-												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> を追加しました。` }, []);
+												const SENDER = new Sender({ discord: `自動通知のメンション対象ロールに <@&${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
 											}, true, true);
@@ -180,12 +180,12 @@ export const SettingsCommand = {
 											mentions.users.splice(mentions.users.findIndex((userId) => { userId === TARGET_ID }), 1);
 
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
-												const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーから <@${TARGET_ID}> を削除しました。` }, []);
+												const SENDER = new Sender({ discord: `自動通知のメンション対象ユーザーから <@${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
 											}, true, true);
 										} else {
-											const SENDER = new Sender({ plain: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は登録されていません。` }, []);
+											const SENDER = new Sender({ discord: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は登録されていません。` }, []);
 											SENDER.setDiscordOption();
 											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
@@ -197,14 +197,14 @@ export const SettingsCommand = {
 													mentions.everyone = false;
 
 													queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
-														const SENDER = new Sender({ plain: `自動通知のメンション対象ロールから @everyone を削除しました。` }, []);
+														const SENDER = new Sender({ discord: `自動通知のメンション対象ロールから @everyone を削除しました。` }, []);
 														SENDER.setDiscordOption();
 														SENDER.replyToDiscord(interaction);
 													}, true, true);
 													
 													break;
 												default:
-													const SENDER = new Sender({ plain: "自動通知のメンション対象ロールに @everyone は登録されていません。" }, []);
+													const SENDER = new Sender({ discord: "自動通知のメンション対象ロールに @everyone は登録されていません。" }, []);
 													SENDER.setDiscordOption();
 													SENDER.replyToDiscord(interaction, true);
 													MYSQL_CONNECTION.end();
@@ -214,12 +214,12 @@ export const SettingsCommand = {
 											mentions.roles.splice(mentions.roles.findIndex((roleId) => { roleId === TARGET_ID }), 1);
 
 											queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET mentions='${JSON.stringify(mentions)}' WHERE server_id=${SERVER_ID};`, () => {
-												const SENDER = new Sender({ plain: `自動通知のメンション対象ロールから <@&${TARGET_ID}> を削除しました。` }, []);
+												const SENDER = new Sender({ discord: `自動通知のメンション対象ロールから <@&${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
 											}, true, true);
 										} else {
-											const SENDER = new Sender({ plain: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は登録されていません。` }, []);
+											const SENDER = new Sender({ discord: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は登録されていません。` }, []);
 											SENDER.setDiscordOption();
 											SENDER.replyToDiscord(interaction, true);
 											MYSQL_CONNECTION.end();
@@ -232,26 +232,26 @@ export const SettingsCommand = {
 						case "list":
 							queryDatabase(MYSQL_CONNECTION, `SELECT mentions FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
 									let mentions = JSON.parse(results[0]["mentions"]);
-									let preface = { plain: "" };
+									let preface = { discord: "" };
 
 									if (mentions.users.length === 0 && mentions.roles.length === 0 && !mentions.everyone) {
-										preface.plain = "自動通知のメンション対象は登録されていません。";
+										preface.discord = "自動通知のメンション対象は登録されていません。";
 									} else {
-										preface.plain += "自動通知のメンション対象は次の通りです。";
+										preface.discord += "自動通知のメンション対象は次の通りです。";
 
 										if (mentions.users.length > 0) {
-											preface.plain += "\n" + heading("ユーザー", 2) + "\n";
+											preface.discord += "\n" + heading("ユーザー", 2) + "\n";
 											let userMentions = new Array();
 											mentions.users.forEach((user) => { userMentions.push(userMention(user)) });
-											preface.plain += unorderedList(userMentions);
+											preface.discord += unorderedList(userMentions);
 										}
 
 										if (mentions.everyone || mentions.roles.length > 0) {
-											preface.plain += "\n" + heading("ロール", 2) + "\n";
+											preface.discord += "\n" + heading("ロール", 2) + "\n";
 											let roleMentions = new Array();
 											if (mentions.everyone) roleMentions.push("@everyone");
 											mentions.roles.forEach((role) => { roleMentions.push(roleMention(role)) });
-											preface.plain += unorderedList(roleMentions);
+											preface.discord += unorderedList(roleMentions);
 										}
 									}
 
@@ -276,12 +276,12 @@ export const SettingsCommand = {
 									disabledReportTypes.splice(disabledReportTypes.findIndex((type) => { type === TARGET_TYPE }), 1);
 
 									queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET report_types='{ "disabled": ${JSON.stringify(disabledReportTypes)} }' WHERE server_id=${SERVER_ID};`, () => {
-										const SENDER = new Sender({ plain: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知を有効にしました。` }, []);
+										const SENDER = new Sender({ discord: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知を有効にしました。` }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 									}, true, true);
 								} else {
-									const SENDER = new Sender({ plain: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知は既に有効です。` }, []);
+									const SENDER = new Sender({ discord: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知は既に有効です。` }, []);
 									SENDER.setDiscordOption();
 									SENDER.replyToDiscord(interaction);
 									MYSQL_CONNECTION.end();
@@ -296,7 +296,7 @@ export const SettingsCommand = {
 								let disabledReportTypes = JSON.parse(results[0]["report_types"]).disabled;
 
 								if (disabledReportTypes.includes(TARGET_TYPE)) {
-									const SENDER = new Sender({ plain: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知は既に無効です。` }, []);
+									const SENDER = new Sender({ discord: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知は既に無効です。` }, []);
 									SENDER.setDiscordOption();
 									SENDER.replyToDiscord(interaction);
 									MYSQL_CONNECTION.end();
@@ -304,7 +304,7 @@ export const SettingsCommand = {
 									disabledReportTypes.push(TARGET_TYPE);
 
 									queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET report_types='{ "disabled": ${JSON.stringify(disabledReportTypes)} }' WHERE server_id=${SERVER_ID};`, () => {
-										const SENDER = new Sender({ plain: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知を無効にしました。` }, []);
+										const SENDER = new Sender({ discord: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知を無効にしました。` }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
 									}, true, true);
@@ -317,7 +317,7 @@ export const SettingsCommand = {
 							queryDatabase(MYSQL_CONNECTION, `SELECT report_types FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
 								let disabledReportTypes = JSON.parse(results[0]["report_types"]).disabled, reportTypesStatusText = new Array();
 								REPORT_TYPES.forEach((type) => { reportTypesStatusText.push(`${REPORT_TYPE_NAMES[type]}：${disabledReportTypes.includes(type) ? "無効" : "有効"}`); });
-								const SENDER = new Sender({ plain: `各種自動通知の有効／無効の状態は次の通りです。\n${unorderedList(reportTypesStatusText)}` }, []);
+								const SENDER = new Sender({ discord: `各種自動通知の有効／無効の状態は次の通りです。\n${unorderedList(reportTypesStatusText)}` }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
 							}, true, true);
@@ -333,7 +333,7 @@ export const SettingsCommand = {
 							const JOINING_CHANNEL_ID = interaction.options.getChannel("channel").id;
 
 							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET channel_id=${JOINING_CHANNEL_ID} WHERE server_id=${SERVER_ID};`, () => {
-								const SENDER = new Sender({ plain: "自動通知するテキストチャンネルに <#" + JOINING_CHANNEL_ID + "> を登録しました。" }, []);
+								const SENDER = new Sender({ discord: "自動通知するテキストチャンネルに <#" + JOINING_CHANNEL_ID + "> を登録しました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
 							}, true, true);
@@ -342,7 +342,7 @@ export const SettingsCommand = {
 
 						case "leave":
 							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET channel_id=NULL WHERE server_id=${SERVER_ID};`, () => {
-								const SENDER = new Sender({ plain: "自動通知するテキストチャンネルの登録を解除しました。" }, []);
+								const SENDER = new Sender({ discord: "自動通知するテキストチャンネルの登録を解除しました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
 							}, true, true);
@@ -352,12 +352,12 @@ export const SettingsCommand = {
 						case "show":
 							queryDatabase(MYSQL_CONNECTION, `SELECT channel_id FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
 								const JOINED_CHANNEL_ID = results[0]["channel_id"];
-								let preface = { plain: "" };
+								let preface = { discord: "" };
 
 								if (JOINED_CHANNEL_ID) {
-									preface.plain = `自動通知するテキストチャンネルは <#${JOINED_CHANNEL_ID}> です。`;
+									preface.discord = `自動通知するテキストチャンネルは <#${JOINED_CHANNEL_ID}> です。`;
 								} else {
-									preface.plain = "自動通知するテキストチャンネルは登録されていません。";
+									preface.discord = "自動通知するテキストチャンネルは登録されていません。";
 								}
 
 								const SENDER = new Sender(preface, []);
@@ -372,7 +372,7 @@ export const SettingsCommand = {
 					switch (interaction.options.getSubcommand()) {
 						case "enable":
 							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET empty_report=TRUE WHERE server_id=${SERVER_ID};`, () => {
-								const SENDER = new Sender({ plain: "配信が無い時の0時／18時の自動通知を有効にしました。" }, []);
+								const SENDER = new Sender({ discord: "配信が無い時の0時／18時の自動通知を有効にしました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
 							}, true, true);
@@ -381,7 +381,7 @@ export const SettingsCommand = {
 
 						case "disable":
 							queryDatabase(MYSQL_CONNECTION, `UPDATE discord_servers SET empty_report=FALSE WHERE server_id=${SERVER_ID};`, () => {
-								const SENDER = new Sender({ plain: "配信が無い時の0時／18時の自動通知を無効にしました。" }, []);
+								const SENDER = new Sender({ discord: "配信が無い時の0時／18時の自動通知を無効にしました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
 							}, true, true);
@@ -390,7 +390,7 @@ export const SettingsCommand = {
 
 						case "show":
 							queryDatabase(MYSQL_CONNECTION, `SELECT empty_report FROM discord_servers WHERE server_id=${SERVER_ID};`, (results) => {
-								const SENDER = new Sender({ plain: `配信が無い時の0時／18時の自動通知は${ results[0]["empty_report"] ? "有効" : "無効" }です。` }, []);
+								const SENDER = new Sender({ discord: `配信が無い時の0時／18時の自動通知は${ results[0]["empty_report"] ? "有効" : "無効" }です。` }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
 							}, true, true);
