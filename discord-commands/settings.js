@@ -108,7 +108,7 @@ export const SettingsCommand = {
 												const SENDER = new Sender({ discord: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
-											}, true, true);
+											});
 										}
 									} else if (interaction.options.getRole("target")) {
 										if (TARGET_ID === interaction.guild.roles.everyone.id) {
@@ -125,7 +125,7 @@ export const SettingsCommand = {
 														const SENDER = new Sender({ discord: `自動通知のメンション対象ロールに @everyone を追加しました。` }, []);
 														SENDER.setDiscordOption();
 														SENDER.replyToDiscord(interaction);
-													}, true, true);
+													});
 													
 													break;
 											}
@@ -140,10 +140,10 @@ export const SettingsCommand = {
 												const SENDER = new Sender({ discord: `自動通知のメンション対象ロールに <@&${TARGET_ID}> を追加しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
-											}, true, true);
+											});
 										}
 									}
-							}, false, true);
+							});
 
 							break;
 
@@ -160,7 +160,7 @@ export const SettingsCommand = {
 												const SENDER = new Sender({ discord: `自動通知のメンション対象ユーザーから <@${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
-											}, true, true);
+											});
 										} else {
 											const SENDER = new Sender({ discord: `自動通知のメンション対象ユーザーに <@${TARGET_ID}> は登録されていません。` }, []);
 											SENDER.setDiscordOption();
@@ -176,7 +176,7 @@ export const SettingsCommand = {
 														const SENDER = new Sender({ discord: `自動通知のメンション対象ロールから @everyone を削除しました。` }, []);
 														SENDER.setDiscordOption();
 														SENDER.replyToDiscord(interaction);
-													}, true, true);
+													});
 													
 													break;
 												default:
@@ -192,14 +192,14 @@ export const SettingsCommand = {
 												const SENDER = new Sender({ discord: `自動通知のメンション対象ロールから <@&${TARGET_ID}> を削除しました。` }, []);
 												SENDER.setDiscordOption();
 												SENDER.replyToDiscord(interaction);
-											}, true, true);
+											});
 										} else {
 											const SENDER = new Sender({ discord: `自動通知のメンション対象ロールに <@&${TARGET_ID}> は登録されていません。` }, []);
 											SENDER.setDiscordOption();
 											SENDER.replyToDiscord(interaction, true);
 										}
 									}
-							}, false, true);
+							});
 
 							break;
 
@@ -232,7 +232,7 @@ export const SettingsCommand = {
 									const SENDER = new Sender(preface, []);
 									SENDER.setDiscordOption();
 									SENDER.replyToDiscord(interaction, true);
-							}, true, true);
+							});
 
 							break;
 					}
@@ -253,13 +253,13 @@ export const SettingsCommand = {
 										const SENDER = new Sender({ discord: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知を有効にしました。` }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
-									}, true, true);
+									});
 								} else {
 									const SENDER = new Sender({ discord: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知は既に有効です。` }, []);
 									SENDER.setDiscordOption();
 									SENDER.replyToDiscord(interaction);
 								}
-							}, false, true);
+							});
 
 							break;
 
@@ -279,9 +279,9 @@ export const SettingsCommand = {
 										const SENDER = new Sender({ discord: `${REPORT_TYPE_NAMES[TARGET_TYPE]}の自動通知を無効にしました。` }, []);
 										SENDER.setDiscordOption();
 										SENDER.replyToDiscord(interaction);
-									}, true, true);
+									});
 								}
-							}, false, true);
+							});
 
 							break;
 
@@ -292,7 +292,7 @@ export const SettingsCommand = {
 								const SENDER = new Sender({ discord: `各種自動通知の有効／無効の状態は次の通りです。\n${unorderedList(reportTypesStatusText)}` }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
-							}, true, true);
+							});
 
 							break;
 					}
@@ -308,7 +308,7 @@ export const SettingsCommand = {
 								const SENDER = new Sender({ discord: "自動通知するテキストチャンネルに <#" + JOINING_CHANNEL_ID + "> を登録しました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
-							}, true, true);
+							});
 
 							break;
 
@@ -317,7 +317,7 @@ export const SettingsCommand = {
 								const SENDER = new Sender({ discord: "自動通知するテキストチャンネルの登録を解除しました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
-							}, true, true);
+							});
 
 							break;
 
@@ -335,7 +335,7 @@ export const SettingsCommand = {
 								const SENDER = new Sender(preface, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
-							}, true, true);
+							});
 
 							break;
 					}
@@ -347,7 +347,7 @@ export const SettingsCommand = {
 								const SENDER = new Sender({ discord: "配信が無い時の0時／18時の自動通知を有効にしました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
-							}, true, true);
+							});
 
 							break;
 
@@ -356,7 +356,7 @@ export const SettingsCommand = {
 								const SENDER = new Sender({ discord: "配信が無い時の0時／18時の自動通知を無効にしました。" }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
-							}, true, true);
+							});
 
 							break;
 
@@ -365,7 +365,7 @@ export const SettingsCommand = {
 								const SENDER = new Sender({ discord: `配信が無い時の0時／18時の自動通知は${ results[0]["empty_report"] ? "有効" : "無効" }です。` }, []);
 								SENDER.setDiscordOption();
 								SENDER.replyToDiscord(interaction);
-							}, true, true);
+							});
 
 							break;
 					}

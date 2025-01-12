@@ -56,7 +56,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 		JOINING_DISCORD_SERVER_IDS.forEach((serverId) => {
 			if (!registeredDiscordServerIds.includes(serverId)) createDiscordServer(serverId, DISCORD_CLIENT.guilds.cache.get(serverId).systemChannelId);
 		});
-	}, false, false);
+	});
 
 	cron.schedule("0 0 0 * * *", () => { postPeriodicReports(0, 100800000, "今日", "today") });
 	cron.schedule("0 0 18 * * *", () => { postPeriodicReports(18, 43200000, "今夜", "tonight") });
@@ -104,7 +104,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 					for (let i = 0; i < results.length; i++) {
 						SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CLIENT.guilds.cache.get(results[i]["server_id"]).systemChannelId);
 					}
-				}, false, false);
+				});
 			});
 		}
 	});
@@ -209,7 +209,7 @@ function postReports(preface, scheduleList, type) {
 				SENDER.sendToDiscord(DISCORD_CLIENT, results[i]["channel_id"]);
 			}
 		}
-	}, false, false);
+	});
 }
 
 function setDiscordAvtivity() {
@@ -238,11 +238,11 @@ function createDiscordServer(serverId, serverSystemChannelId) {
 				ANNOUNCEMENT_SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
 			});
 		}
-	}, false, false);
+	});
 }
 
 function deleteDiscordServer(serverId) {
 	queryDatabase(MYSQL_CONNECTION, `DELETE FROM discord_servers WHERE server_id=${serverId};`, () => {
 		outputLog(`サーバー（ID：${serverId}）から退出しました。`);
-	}, false, false);
+	});
 }
