@@ -1,6 +1,6 @@
 {
   "name": "otoschedule",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "This is notification bot of live broadcast in OTOMAD community.",
   "main": "index.js",
   "scripts": {
