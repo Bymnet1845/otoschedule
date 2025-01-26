@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, StageChannel } from "discord.js";
 import { format } from "date-fns";
 import getScheduleList from "../get-schedule-list.js";
 import Sender from "../sender.js";
@@ -44,7 +44,8 @@ export const ListCommand = {
 					break;
 			}
 			
-			let preface = { discord: `${format(startDateTime, "yyyy年M月d日")}（${DAY_OF_WEEK[startDateTime.getDay()]}）0時 ～ ${format(endDateTime, "yyyy年M月d日")}（${DAY_OF_WEEK[endDateTime.getDay()]}）4時` + "\n音MAD周辺配信表に掲載されている配信は" };
+			const PROVISIONAL_END_DATE_TIME = new Date(endDateTime.getTime() - 100800000);
+			let preface = { discord: `${format(startDateTime, "yyyy年M月d日")}（${DAY_OF_WEEK[startDateTime.getDay()]}）～${format(PROVISIONAL_END_DATE_TIME, "yyyy年M月d日")}（${DAY_OF_WEEK[PROVISIONAL_END_DATE_TIME.getDay()]}）深夜` + "\n音MAD周辺配信表に掲載されている配信は" };
 			const SCHEDULE_LIST = await getScheduleList(startDateTime.getTime(), endDateTime.getTime());
 
 			if (SCHEDULE_LIST.length > 0) {

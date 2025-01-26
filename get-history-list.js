@@ -4,6 +4,7 @@ import { format } from "date-fns";
 dotenv.config();
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const GOOGLE_SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID;
+const DAY_OF_WEEK = ["日", "月", "火", "水", "木", "金", "土"];
 
 export default async function getHistoryList(startUnixTime, endUnixTime) {
 	let historyList = new Array();
@@ -38,10 +39,12 @@ export default async function getHistoryList(startUnixTime, endUnixTime) {
 				history2.type = "【新規追加】";
 			}
 			
+			const HISTORY_DATE_TIME = new Date(history1[3]);
+
 			if (history1[4]) {
-				history2.time += format(history1[3], "yyyy-MM-dd HH:mm");
+				history2.time += format(history1[3], "yyyy年M月d日（") + DAY_OF_WEEK[HISTORY_DATE_TIME.getDay()] + "） " + format(history1[3], "HH:mm");
 			} else {
-				history2.time += format(history1[3], "yyyy-MM-dd 時刻不明");
+				history2.time += format(history1[3], "yyyy年M月d日（") + DAY_OF_WEEK[HISTORY_DATE_TIME.getDay()] + "） 時刻不明";
 			}
 
 			const HISTORY_LIST_CHECKING_RESULT = historyList.findIndex((history) => history.id === history2.id);
