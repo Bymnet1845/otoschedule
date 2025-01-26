@@ -37,7 +37,7 @@ export default class Sender {
 			let parameters = {
 				i: MISSKEY_ACCESS_TOKEN,
 				text: message,
-				visibility: "specified"
+				visibility: "public"
 			};
 
 			if (beforePostId !== undefined) parameters.replyId = beforePostId;
