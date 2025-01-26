@@ -96,7 +96,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 		if (ANNOUNCEMENT_LIST.length > 0) {
 			ANNOUNCEMENT_LIST.forEach((announcement) => {
 				const SENDER = new Sender({ plain: announcement.content.bluesky, misskey: announcement.content.misskey, discord: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
-				// if (announcement.content.bluesky) SENDER.sendToBluesky();
+				if (announcement.content.bluesky) SENDER.sendToBluesky();
 				if (announcement.content.misskey) SENDER.sendToMisskey();
 				SENDER.setDiscordOption();
 
