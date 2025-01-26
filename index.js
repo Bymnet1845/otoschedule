@@ -201,7 +201,7 @@ function postReports(preface, scheduleList, type) {
 
 	if (scheduleList.length > 0) {
 		SENDER.sendToMisskey();
-		// SENDER.sendToBluesky();
+		SENDER.sendToBluesky();
 	}
 
 	queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
