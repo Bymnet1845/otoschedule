@@ -168,6 +168,10 @@ DISCORD_CLIENT.on(Events.GuildDelete, (guild) => {
 	deleteDiscordServer(guild.id);
 });
 
+process.on("uncaughtException", (error) => {
+	outputLog(error, "error");
+});
+
 async function postPeriodicReports(nowHours, periodTime, prefacePeriodText, type) {
 	const NOW = new Date();
 	const START_UNIX_TIME = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate(), nowHours, 0, 0).getTime();
