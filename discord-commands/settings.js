@@ -340,6 +340,8 @@ export const SettingsCommand = {
 							break;
 					}
 
+				break;
+
 				case "empty-report":
 					switch (interaction.options.getSubcommand()) {
 						case "enable":
