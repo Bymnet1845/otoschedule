@@ -1,10 +1,10 @@
 import * as dotenv from "dotenv";
 import { format } from "date-fns";
 import cron from "node-cron";
-import mysql from "mysql";
 import japaneseHolidays from "japanese-holidays";
 import { Client, Events, GatewayIntentBits, ActivityType, heading, unorderedList, inlineCode } from "discord.js";
 import outputLog from "./output-log.js";
+import connectDatabase from "./connect-database.js";
 import queryDatabase from "./query-database.js";
 import getScheduleList from "./get-schedule-list.js";
 import getHistoryList from "./get-history-list.js";
@@ -22,23 +22,7 @@ const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const DISCORD_CLIENT = new Client({ intents: [GatewayIntentBits.Guilds] });
 DISCORD_CLIENT.login(DISCORD_TOKEN);
 
-const MYSQL_CONNECTION = mysql.createConnection({
-	host: process.env.MYSQL_HOST,
-	user: process.env.MYSQL_USER,
-	password: process.env.MYSQL_PASSWORD,
-	database: process.env.MYSQL_DATABASE,
-	supportBigNumbers: true,
-	bigNumberStrings: true
-});
-
-MYSQL_CONNECTION.connect((error) => {
-	if (error) {
-		outputLog(error, "error");
-		return;
-	} else {
-		outputLog("データベースに接続しました。");
-	}
-});
+const MYSQL_CONNECTION = connectDatabase();
 
 DISCORD_CLIENT.on("ready", (event) => {
 	outputLog(`${event.user.tag}としてDiscordにログインします。`);
