@@ -102,7 +102,8 @@ DISCORD_CLIENT.on(Events.InteractionCreate, async (interaction) => {
 
 	if (interaction.commandName === SettingsCommand.data.name) {
 		try {
-			await SettingsCommand.execute(interaction, MYSQL_CONNECTION);
+			const COMMAND_MYSQL_CONNECTION = connectDatabase();
+			await SettingsCommand.execute(interaction, COMMAND_MYSQL_CONNECTION);
 		} catch (error) {
 			outputLog(error, "error");
 			const SENDER = Sender({ discord: "コマンド実行時にエラーが発生しました。" });
