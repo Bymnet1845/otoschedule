@@ -22,15 +22,14 @@ const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const DISCORD_CLIENT = new Client({ intents: [GatewayIntentBits.Guilds] });
 DISCORD_CLIENT.login(DISCORD_TOKEN);
 
-const MYSQL_CONNECTION = connectDatabase();
-
 DISCORD_CLIENT.on("ready", (event) => {
 	outputLog(`${event.user.tag}としてDiscordにログインします。`);
 	setDiscordAvtivity();
+	const BOOT_MYSQL_CONNECTION = connectDatabase();
 	const JOINING_DISCORD_SERVER_IDS = DISCORD_CLIENT.guilds.cache.map((guild) => guild.id);
 	let registeredDiscordServerIds = new Array();
 
-	queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
+	queryDatabase(BOOT_MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
 		results.forEach((result) => {
 			let serverId = result["server_id"];
 			registeredDiscordServerIds.push(serverId);
@@ -73,6 +72,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 	});
 
 	cron.schedule("0 0 3,9,15,21 * * *", async () => {
+		const MYSQL_CONNECTION = connectDatabase();
 		const NOW = new Date();
 		const NOW_UNIX_TIME = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate(), NOW.getHours(), 0, 0).getTime();
 		const ANNOUNCEMENT_LIST = await getAnnouncementList(NOW_UNIX_TIME - 22199999, NOW_UNIX_TIME - 600000);
@@ -186,6 +186,7 @@ async function postPeriodicReports(nowHours, periodTime, prefacePeriodText, type
 }
 
 function postReports(preface, scheduleList, type) {
+	const MYSQL_CONNECTION = connectDatabase();
 	const SENDER = new Sender(preface, scheduleList);
 
 	if (scheduleList.length > 0) {
@@ -212,6 +213,7 @@ function setDiscordAvtivity() {
 }
 
 function createDiscordServer(serverId, serverSystemChannelId) {
+	const MYSQL_CONNECTION = connectDatabase();
 	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types, empty_report) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [], \"everyone\": false }', '{ \"disabled\": [] }', FALSE);`, async () => {
 		outputLog(`サーバー（ID：${serverId}）に参加しました。`);
 		const SENDER = new Sender({ discord: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さりありがとうございます！\n「音MAD周辺配信通知bot」は、音MAD周りの生放送配信の情報を集めた「音MAD周辺配信表」の情報を自動で通知するbotです。\n" + heading("初期設定", 2) + "\n本botでは、ユーザーが登録したテキストチャンネルに「自動通知」をします。\nまずは、" + inlineCode("/settings channel join") + "コマンドでテキストチャンネルを登録して下さい。\n" + heading("主な機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、まもなく開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", inlineCode("/list") + "系コマンドで指定された期間の配信の一覧を表示します。", inlineCode("/spreadsheets") + "コマンドで本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。"]) + "\n" + heading("カスタマイズ", 2) + "\n" + unorderedList([inlineCode("/settings report-types disable") + "：種別別に自動通知を無効にします。", inlineCode("/settings empty-report enable") + "：通知出来る配信が無い時にも、0時／18時の自動通知を有効にします。", inlineCode("/settings mentions add") + "：自動通知でメンションさせるユーザー／ロールを登録します。"]) + "\n" + heading("利用上の注意", 2) + "\n本bot及びその情報元である「音MAD周辺配信表」は、第三者が手動で勝手にまとめている物である為、把握していない配信があったり、急な予定変更が反映されていなかったりする場合があります。予め、ご了承下さい。" }, []);		 
@@ -233,6 +235,7 @@ function createDiscordServer(serverId, serverSystemChannelId) {
 }
 
 function deleteDiscordServer(serverId) {
+	const MYSQL_CONNECTION = connectDatabase();
 	queryDatabase(MYSQL_CONNECTION, `DELETE FROM discord_servers WHERE server_id=${serverId};`, () => {
 		outputLog(`サーバー（ID：${serverId}）から退出しました。`);
 	});
