@@ -87,7 +87,8 @@ DISCORD_CLIENT.on("ready", (event) => {
 				if (announcement.content.discord) {
 					queryDatabase(MYSQL_CONNECTION, "SELECT * FROM discord_servers", (results) => {
 						for (let i = 0; i < results.length; i++) {
-							SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CLIENT.guilds.cache.get(results[i]["server_id"]).systemChannelId);
+							const DISCORD_CHANNLEL_ID = results[i]["channel_id"] ? results[i]["channel_id"] : DISCORD_CLIENT.guilds.cache.get(results[i]["server_id"]).systemChannelId;
+							SENDER.sendToDiscord(DISCORD_CLIENT, DISCORD_CHANNLEL_ID);
 						}
 					});
 				}
