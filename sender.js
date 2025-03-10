@@ -134,7 +134,7 @@ export default class Sender {
 				if (schedule.title[0] === "#") {
 					scheduleTitle = "\\" + schedule.title;
 				} else {
-					scheduleTitle = scheduleTitle;
+					scheduleTitle = schedule.title;
 				}
 
 				let scheduleLink;
