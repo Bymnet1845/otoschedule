@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import atprotoApi from "@atproto/api";
 const { BskyAgent, RichText } = atprotoApi;
-import { MessageFlags, heading, hyperlink } from "discord.js";
+import { MessageFlags } from "discord.js";
 import outputLog from "./output-log.js";
 
 dotenv.config();
@@ -129,15 +129,23 @@ export default class Sender {
 
 		if (this.scheduleList.length > 0) {
 			this.scheduleList.forEach((schedule) => {
+				let scheduleTitle;
+
+				if (schedule.title[0] === "#") {
+					scheduleTitle = "\\" + schedule.title;
+				} else {
+					scheduleTitle = scheduleTitle;
+				}
+
 				let scheduleLink;
 
 				if (schedule.link.hasTitle) {
-					scheduleLink = hyperlink(schedule.link.title, schedule.link.url);
+					scheduleLink = "[" + schedule.link.title + "](<" + schedule.link.url + ">)";
 				} else {
-					scheduleLink = schedule.link.url;
+					scheduleLink = "<" + schedule.link.url + ">";
 				}
 
-				let scheduleText = heading(schedule.title, 2) + "\n" + (schedule.type ? schedule.type + "\n" : "") + schedule.time + "\n" + scheduleLink;
+				let scheduleText = "## " + scheduleTitle + "\n" + (schedule.type ? schedule.type + "\n" : "") + schedule.time + "\n" + scheduleLink;
 
 				if ([...messageList[messageList.length - 1]].length + [...scheduleText].length + 1 > 2000) {
 					messageList.push(scheduleText);

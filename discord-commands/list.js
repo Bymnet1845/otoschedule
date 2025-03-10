@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { SlashCommandBuilder, StageChannel } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { format } from "date-fns";
 import getScheduleList from "../get-schedule-list.js";
 import Sender from "../sender.js";

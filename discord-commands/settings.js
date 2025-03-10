@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { SlashCommandBuilder, ChannelType, heading, unorderedList, userMention, roleMention } from "discord.js";
+import { SlashCommandBuilder, ChannelType, unorderedList } from "discord.js";
 import queryDatabase from "../query-database.js";
 import Sender from "../sender.js";
 
@@ -226,17 +226,17 @@ export const SettingsCommand = {
 										preface.discord += "自動通知のメンション対象は次の通りです。";
 
 										if (mentions.users.length > 0) {
-											preface.discord += "\n" + heading("ユーザー", 2) + "\n";
+											preface.discord += "\n## ユーザー\n";
 											let userMentions = new Array();
-											mentions.users.forEach((user) => { userMentions.push(userMention(user)) });
+											mentions.users.forEach((user) => { userMentions.push(`<@${user}>`) });
 											preface.discord += unorderedList(userMentions);
 										}
 
 										if (mentions.everyone || mentions.roles.length > 0) {
-											preface.discord += "\n" + heading("ロール", 2) + "\n";
+											preface.discord += "\n## ロール\n";
 											let roleMentions = new Array();
 											if (mentions.everyone) roleMentions.push("@everyone");
-											mentions.roles.forEach((role) => { roleMentions.push(roleMention(role)) });
+											mentions.roles.forEach((role) => { roleMentions.push(`<@&${role}>`) });
 											preface.discord += unorderedList(roleMentions);
 										}
 									}

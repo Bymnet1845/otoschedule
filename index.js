@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import { format } from "date-fns";
 import cron from "node-cron";
 import japaneseHolidays from "japanese-holidays";
-import { Client, Events, GatewayIntentBits, ActivityType, heading, unorderedList, inlineCode } from "discord.js";
+import { Client, Events, GatewayIntentBits, ActivityType } from "discord.js";
 import outputLog from "./output-log.js";
 import connectDatabase from "./connect-database.js";
 import queryDatabase from "./query-database.js";
@@ -79,7 +79,7 @@ DISCORD_CLIENT.on("ready", (event) => {
 
 		if (ANNOUNCEMENT_LIST.length > 0) {
 			ANNOUNCEMENT_LIST.forEach((announcement) => {
-				const SENDER = new Sender({ plain: announcement.content.bluesky, misskey: announcement.content.misskey, discord: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
+				const SENDER = new Sender({ plain: announcement.content.bluesky, misskey: announcement.content.misskey, discord: "# " + announcement.title + "\n" + announcement.content.discord }, []);
 				if (announcement.content.bluesky) SENDER.sendToBluesky();
 				if (announcement.content.misskey) SENDER.sendToMisskey();
 				SENDER.setDiscordOption();
@@ -217,7 +217,7 @@ function createDiscordServer(serverId, serverSystemChannelId) {
 	const MYSQL_CONNECTION = connectDatabase();
 	queryDatabase(MYSQL_CONNECTION, `INSERT INTO discord_servers (server_id, channel_id, mentions, report_types, empty_report) VALUES (${serverId}, NULL, '{ \"users\": [], \"roles\": [], \"everyone\": false }', '{ \"disabled\": [] }', FALSE);`, async () => {
 		outputLog(`サーバー（ID：${serverId}）に参加しました。`);
-		const SENDER = new Sender({ discord: heading("Discord向け 音MAD周辺配信通知bot", 1) + "\nサーバーに追加して下さりありがとうございます！\n「音MAD周辺配信通知bot」は、音MAD周りの生放送配信の情報を集めた「音MAD周辺配信表」の情報を自動で通知するbotです。\n" + heading("初期設定", 2) + "\n本botでは、ユーザーが登録したテキストチャンネルに「自動通知」をします。\nまずは、" + inlineCode("/settings channel join") + "コマンドでテキストチャンネルを登録して下さい。\n" + heading("主な機能", 2) + "\n" + unorderedList(["今日／今夜予定の配信（0時／18時）、まもなく開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。", inlineCode("/list") + "系コマンドで指定された期間の配信の一覧を表示します。", inlineCode("/spreadsheets") + "コマンドで本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。"]) + "\n" + heading("カスタマイズ", 2) + "\n" + unorderedList([inlineCode("/settings report-types disable") + "：種別別に自動通知を無効にします。", inlineCode("/settings empty-report enable") + "：通知出来る配信が無い時にも、0時／18時の自動通知を有効にします。", inlineCode("/settings mentions add") + "：自動通知でメンションさせるユーザー／ロールを登録します。"]) + "\n" + heading("利用上の注意", 2) + "\n本bot及びその情報元である「音MAD周辺配信表」は、第三者が手動で勝手にまとめている物である為、把握していない配信があったり、急な予定変更が反映されていなかったりする場合があります。予め、ご了承下さい。" }, []);		 
+		const SENDER = new Sender({ discord: "# Discord向け 音MAD周辺配信通知bot\nサーバーに追加して下さりありがとうございます！\n「音MAD周辺配信通知bot」は、音MAD周りの生放送配信の情報を集めた「音MAD周辺配信表」の情報を自動で通知するbotです。\n## 初期設定\n本botでは、ユーザーが登録したテキストチャンネルに「自動通知」をします。\nまずは、`/settings channel join`コマンドでテキストチャンネルを登録して下さい。\n## 主な機能\n- 今日／今夜予定の配信（0時／18時）、まもなく開始予定の配信、音MAD周辺配信表の更新といった情報を自動通知します。\n- `/list`系コマンドで指定された期間の配信の一覧を表示します。\n- `/spreadsheets`コマンドで本家スプレッドシート「音MAD周辺配信表」へのリンクを表示します。\n## カスタマイズ\n- `/settings report-types disable`：種別別に自動通知を無効にします。\n- `/settings empty-report enable`：通知出来る配信が無い時にも、0時／18時の自動通知を有効にします。\n- `/settings mentions add`：自動通知でメンションさせるユーザー／ロールを登録します。\n## 利用上の注意\n本bot及びその情報元である「音MAD周辺配信表」は、第三者が手動で勝手にまとめている物である為、把握していない配信があったり、急な予定変更が反映されていなかったりする場合があります。予め、ご了承下さい。" }, []);		 
 		SENDER.setDiscordOption();
 		SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
 
@@ -227,7 +227,7 @@ function createDiscordServer(serverId, serverSystemChannelId) {
 	
 		if (ANNOUNCEMENT_LIST.length > 0) {
 			ANNOUNCEMENT_LIST.forEach((announcement) => {
-				const ANNOUNCEMENT_SENDER = new Sender({ discord: heading(announcement.title, 1) + "\n" + announcement.content.discord }, []);
+				const ANNOUNCEMENT_SENDER = new Sender({ discord: "# " + announcement.title + "\n" + announcement.content.discord }, []);
 				ANNOUNCEMENT_SENDER.setDiscordOption();
 				ANNOUNCEMENT_SENDER.sendToDiscord(DISCORD_CLIENT, serverSystemChannelId);
 			});
