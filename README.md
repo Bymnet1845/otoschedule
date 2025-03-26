@@ -14,6 +14,6 @@
 
 ## リンク
 
-- [ウェブサイト](https://otoschedule.otomad.site/)
+- [ウェブサイト](https://otoschedule.otomad.net/)
 - [Blueskyアカウント（@otoschedule.bsky.social）](https://bsky.app/profile/otoschedule.bsky.social)
 - [Misskeyアカウント（@otoschedule@zadankai.club）](https://zadankai.club/@otoschedule)
